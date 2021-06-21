@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     },
     input: {
         height: 40,
-        marginVertical: 15,
+        marginBottom: 15,
         borderBottomWidth: 1,
         fontSize:20,
         color:"#fff",

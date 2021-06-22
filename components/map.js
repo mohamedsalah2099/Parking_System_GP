@@ -1,10 +1,29 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
-import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE, Marker ,Callout } from 'react-native-maps';
+import Constants from 'expo-constants';
+import * as Location from 'expo-location';
 const Map = () => {
     const [lat, setLat] = useState(30.102252)
     const [long, setLong] = useState(31.25444)
     const [margBtm, setMargBtm] = useState(1)
+    const getCurrentLocation =  async () => {
+        if (Platform.OS === 'android' && !Constants.isDevice) {
+          console.log(
+            'Oops, this will not work on Snack in an Android emulator. Try it on your device!'
+          );
+          return;
+        }
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          console.log('Permission to access location was denied');
+          return;
+        }
+  
+        let location = await Location.getCurrentPositionAsync({});
+        setLat(location.coords.latitude);
+        setLong(location.coords.longitude);
+      };
     return (
         <View style={styles.container} >
             <MapView style={[styles.map, { flex: 1, marginBottom: margBtm }]}
@@ -27,11 +46,16 @@ const Map = () => {
                     setMargBtm(0)
                 }}
             >
-                <Marker coordinate={{ latitude: lat, longitude: long }}
-                    title="parking1" />
+                <Marker  style={{width:40,height:50}} coordinate={{ latitude: lat, longitude: long }}
+                    title="parking1" >
+                        <Image style={{width:"100%",height:"100%"}}  source={require('../assets/parkingSign.png')}/>
+                        <Callout>
+                            <Text>Alex parking</Text>
+                        </Callout>
+                        </Marker>
 
             </MapView>
-            <TouchableOpacity style={styles.currentlocBtn}>
+            <TouchableOpacity style={styles.currentlocBtn} onPress={getCurrentLocation}>
                 <Image source={require('../assets/current.png')} resizeMode='contain' style={{
                     width: "100%",
                     height: "100%"

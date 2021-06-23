@@ -2,8 +2,19 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Marker ,Callout,Polyline } from 'react-native-maps';
 import Constants from 'expo-constants';
+import OpenMap from "react-native-open-map";
 import * as Location from 'expo-location';
 //AIzaSyAn703TGP6VQS-0wJWadUCUrknm-GoDPEE
+const openExternalMap = ()=>{
+    OpenMap.show({
+        latitude: 40.778721,
+        longitude: -73.968188,
+        title: 'Central Park',
+        cancelText: 'Close',
+        actionSheetTitle: 'Chose app',
+        actionSheetMessage: 'Available applications '
+      });
+}
 const Map = () => {
     const [lat, setLat] = useState(30.102252)
     const [long, setLong] = useState(31.25444)
@@ -32,7 +43,7 @@ const Map = () => {
         <View style={styles.container} >
             <MapView style={[styles.map, { flex: 1, marginBottom: margBtm }]}
                 provider={MapView.PROVIDER_GOOGLE}
-                initialRegion={{
+                region={{
                     latitude: lat,
                     longitude: long,
                     latitudeDelta: 0.09,
@@ -51,16 +62,17 @@ const Map = () => {
                     setMargBtm(0)
                 }}
             >
-                   <MapView.Polyline
-          coordinates={points}
-          strokeWidth={10}
-          strokeColor="#000" 
-         
-          />
-           
+               
+                <Marker  style={{width:40,height:50}} coordinate={{ latitude: lat, longitude: long }}
+                    title="parking1" >
+                        <Image style={{width:"100%",height:"100%"}}  source={require('../assets/parkingSign.png')}/>
+                        <Callout>
+                            <Text>Alex parking</Text>
+                        </Callout>
+                        </Marker>
 
             </MapView>
-            <TouchableOpacity style={styles.currentlocBtn} onPress={getCurrentLocation}>
+            <TouchableOpacity style={styles.currentlocBtn} onPress={openExternalMap}>
                 <Image source={require('../assets/current.png')} resizeMode='contain' style={{
                     width: "100%",
                     height: "100%"

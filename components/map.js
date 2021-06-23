@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
-import MapView, { PROVIDER_GOOGLE, Marker ,Callout } from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE, Marker ,Callout,Polyline } from 'react-native-maps';
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
+//AIzaSyAn703TGP6VQS-0wJWadUCUrknm-GoDPEE
 const Map = () => {
     const [lat, setLat] = useState(30.102252)
     const [long, setLong] = useState(31.25444)
     const [margBtm, setMargBtm] = useState(1)
+    const points = [
+        { latitude: 11.56813, longitude: 104.91037 },
+        { latitude: 11.56779, longitude: 104.90666 },]
     const getCurrentLocation =  async () => {
         if (Platform.OS === 'android' && !Constants.isDevice) {
           console.log(
@@ -34,6 +38,7 @@ const Map = () => {
                     latitudeDelta: 0.09,
                     longitudeDelta: 0.035,
                 }}
+
                 onPress={e => { setLat(e.nativeEvent.coordinate.latitude); setLong(e.nativeEvent.coordinate.longitude) }}
                 showsUserLocation={true}
                 //onPanDrag={e => console.log(e.nativeEvent)}
@@ -46,13 +51,13 @@ const Map = () => {
                     setMargBtm(0)
                 }}
             >
-                <Marker  style={{width:40,height:50}} coordinate={{ latitude: lat, longitude: long }}
-                    title="parking1" >
-                        <Image style={{width:"100%",height:"100%"}}  source={require('../assets/parkingSign.png')}/>
-                        <Callout>
-                            <Text>Alex parking</Text>
-                        </Callout>
-                        </Marker>
+                   <MapView.Polyline
+          coordinates={points}
+          strokeWidth={10}
+          strokeColor="#000" 
+         
+          />
+           
 
             </MapView>
             <TouchableOpacity style={styles.currentlocBtn} onPress={getCurrentLocation}>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
-import MapView, { PROVIDER_GOOGLE, Marker ,Callout,Polyline } from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE, Marker ,Callout } from 'react-native-maps';
 import Constants from 'expo-constants';
 import OpenMap from "react-native-open-map";
 import * as Location from 'expo-location';
@@ -18,7 +18,6 @@ const openExternalMap = ()=>{
 const Map = () => {
     const [lat, setLat] = useState(30.102252)
     const [long, setLong] = useState(31.25444)
-    const [margBtm, setMargBtm] = useState(1)
     const points = [
         { latitude: 11.56813, longitude: 104.91037 },
         { latitude: 11.56779, longitude: 104.90666 },]
@@ -41,7 +40,8 @@ const Map = () => {
       };
     return (
         <View style={styles.container} >
-            <MapView style={[styles.map, { flex: 1, marginBottom: margBtm }]}
+            
+            <MapView style={[styles.map, { flex: 1 }]}
                 provider={MapView.PROVIDER_GOOGLE}
                 region={{
                     latitude: lat,
@@ -57,12 +57,9 @@ const Map = () => {
                 showsMyLocationButton={true}
 
                 onRegionChangeComplete={(region) => { setLat(region.latitude); setLong(region.longitude) }}
-                onMapReady={() => {
-
-                    setMargBtm(0)
-                }}
+              
             >
-               
+              
                 <Marker  style={{width:40,height:50}} coordinate={{ latitude: lat, longitude: long }}
                     title="parking1" >
                         <Image style={{width:"100%",height:"100%"}}  source={require('../assets/parkingSign.png')}/>

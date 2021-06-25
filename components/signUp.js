@@ -1,5 +1,6 @@
 import React,{useState} from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+
 function validateEmail(val) {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(val);
@@ -8,10 +9,10 @@ function validateEmail(val) {
 const SignUp = () => {
     const [name,setName]=useState("");
     const [email,setEmail]=useState("");
+    const [password,setPassword]=useState("");
     const [nameError,setNameERR]=useState("");
     const [emailError,setEmailERR]=useState("");
     const [passError,setPassERR]=useState("")
-    const [password,setPassword]=useState("");
     const _onPressButton=async()=> {  
         if(email=="")
         setEmailERR("*Email field can't be empty");
@@ -76,7 +77,7 @@ const SignUp = () => {
                 </TouchableOpacity>
                 <View style={{ flexDirection: 'row', marginTop: 10 }}>
                     <Text style={styles.touchStyle}>You already have an account?| </Text>
-                    <TouchableOpacity >
+                    <TouchableOpacity>
                         <Text style={styles.touchStyle}>Sign in</Text>
                     </TouchableOpacity>
                 </View>

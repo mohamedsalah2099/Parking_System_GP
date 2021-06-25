@@ -1,6 +1,45 @@
-import React from 'react';
+import React ,{useState}from 'react';
 import { StyleSheet, Text, View, TextInput ,TouchableOpacity} from 'react-native';
+function validateEmail(val) {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(val);
+  }
 const SignIn = () => {
+    const [email,setEmail]=useState("");
+    const [password,setPassword]=useState("");
+    const [emailError,setEmailERR]=useState("");
+    const [passError,setPassERR]=useState("")
+    const _onPressButton=async()=> {
+        if(email=="")
+        setEmailERR("*Email field can't be empty");
+        else if(!validateEmail(email)){
+            setEmailERR("*Your email isn't valid");
+        }
+        else { setEmailERR("")}
+        
+        if(password=="")
+        setPassERR("*Password field can't be empty");
+        else if(password.length<=3){
+            setPassERR("*Your password must be more than 3 characters");
+        }
+        else { setPassERR("")}
+       if(emailError==""&& passError==""){
+           
+        try{
+            let data = {
+                email:email,
+                password:password
+          };
+            await fetch('http://localhost:3000/login',{
+          method:'post',
+          headers: { "Content-Type": "application/json" },
+          body:JSON.stringify(data)
+        })
+      }
+      catch(e){
+        console.log(e);
+      } }
+    }
     return (
         <View style={styles.container} >
             
@@ -9,10 +48,15 @@ const SignIn = () => {
             <View >
                 <Text style={styles.inputHeader}  >E-mail</Text>
                 <TextInput style={styles.input} placeholder="yourName@example.com" placeholderTextColor="#adb5bd" autoCapitalize="none"
-                keyboardType="email-address"/>
+                    keyboardType="email-address"  onChangeText={(email) => setEmail(email)}
+                    value={email} />
+                     <Text style={{color:"#fff",fontSize:16}}>{emailError}</Text>
                 <Text style={styles.inputHeader} >Password</Text>
-                <TextInput style={styles.input} placeholder="your password" placeholderTextColor="#adb5bd" secureTextEntry={true}/>
-                <TouchableOpacity style={styles.buttonStyle}>
+                <TextInput style={styles.input} placeholder="your password" placeholderTextColor="#adb5bd" secureTextEntry={true} 
+                 onChangeText={(pass) => setPassword(pass)}
+                 value={password} maxLength={4}/>
+                 <Text style={{color:"#fff",fontSize:16}}>{passError}</Text>
+                  <TouchableOpacity style={styles.buttonStyle} onPress={_onPressButton}>
                 <Text style={styles.buttonText}>Sign in</Text>
                 </TouchableOpacity>
                 <View style={{flexDirection:'row',marginTop:10}}>

@@ -71,7 +71,23 @@ const ParkingMap = () => {
        
       
     }
-   
+    const getCurrentLocation =  async () => {
+      if (Platform.OS === 'android' && !Constants.isDevice) {
+        console.log(
+          'Oops, this will not work on Snack in an Android emulator. Try it on your device!'
+        );
+        return;
+      }
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.log('Permission to access location was denied');
+        return;
+      }
+  
+      let location = await Location.getCurrentPositionAsync({});
+      setLat(location.coords.latitude);
+      setLong(location.coords.longitude);
+    };
 return(
     <View style={styles.container} >
 <MapView style={[styles.map, { flex: 1 }]}
@@ -174,21 +190,5 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         borderColor: 'rgba(0, 0, 0, 0.1)',
       },})
-    const getCurrentLocation =  async () => {
-        if (Platform.OS === 'android' && !Constants.isDevice) {
-          console.log(
-            'Oops, this will not work on Snack in an Android emulator. Try it on your device!'
-          );
-          return;
-        }
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-          console.log('Permission to access location was denied');
-          return;
-        }
-    
-        let location = await Location.getCurrentPositionAsync({});
-        setLat(location.coords.latitude);
-        setLong(location.coords.longitude);
-      };
+   
     export default ParkingMap;

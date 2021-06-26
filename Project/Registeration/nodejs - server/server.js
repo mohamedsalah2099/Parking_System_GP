@@ -16,7 +16,6 @@ app.post ('/', async (req, res) => {
     'Access-Control-Allow-Headers',
     'Origin, X-Requested-With, Content-Type, Accept'
   );
-  console.log (req.body);
   try {
     await fetch ('https://beta.masterofthings.com/PostAppData', {
       method: 'post',
@@ -49,13 +48,16 @@ app.post ('/login', async (req, res) => {
   res.header ('Access-Control-Allow-Origin', '*');
   res.header (
     'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept'
+    'Origin, X-Requested-With, Content-Type, Accept',
+    
   );
   try {
     await fetch ('https://beta.masterofthings.com/GetAppReadingValueList', {
       method: 'post',
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
+        "Access-Control-Allow-Origin" : "*", 
+"Access-Control-Allow-Credentials" : true 
       },
       body: JSON.stringify ({
         AppId: 43,
@@ -64,12 +66,12 @@ app.post ('/login', async (req, res) => {
           {
             Reading: 'password',
             Condition: 'e',
-            Value: '123456',
+            Value: req.body.password,
           },
           {
-            Reading: 'name',
+            Reading: 'email',
             Condition: 'e',
-            Value: 'Salah',
+            Value: req.body.email,
           },
         ],
         Auth: {
@@ -78,14 +80,25 @@ app.post ('/login', async (req, res) => {
       }),
     })
       .then (res => res.json())
-      .then (value => console.log (value.Info.NumberOfReadings));
+      .then (value => {
+        if(value.Info.NumberOfReadings)
+        {
+          console.log (value.Info.NumberOfReadings)
+          res.json(JSON.stringify(value))
+        }
+        else{
+          console.log("Not Found");
+          res.json("Not Found")
+        }
+      });
   } catch (e) {
     console.log (e);
   }
 
-  res.end ();
+  // res.send("done");
 });
 
 app.listen (port, () => {
   console.log (`Listening at http://localhost:${port}`);
 });
+

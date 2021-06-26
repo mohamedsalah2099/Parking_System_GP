@@ -54,7 +54,7 @@ const SignIn = () => {
                 <Text style={styles.inputHeader} >Password</Text>
                 <TextInput style={styles.input} placeholder="your password" placeholderTextColor="#adb5bd" secureTextEntry={true} 
                  onChangeText={(pass) => setPassword(pass)}
-                 value={password} maxLength={4}/>
+                 value={password} />
                  <Text style={{color:"#fff",fontSize:16}}>{passError}</Text>
                   <TouchableOpacity style={styles.buttonStyle} onPress={_onPressButton}>
                 <Text style={styles.buttonText}>Sign in</Text>

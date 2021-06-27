@@ -33,22 +33,23 @@ const SignUp = ({navigation}) => {
         }
         else { setPassERR("")}
        if(emailError==""&&nameError==""&&passError==""){
-           
-    try{
-         let data = {
-             name:name,
-             email:email,
-             password:password
-       };
-         await fetch('http://localhost:3000',{
-       method:'post',
-       headers: { "Content-Type": "application/json" },
-       body:JSON.stringify(data)
-     })
-   } 
-   catch(e){
-     console.log(e);
-   }  }
+       
+        try{
+            let data = {
+                name:name,
+                email:email,
+                password:password
+          };
+            await fetch('http://localhost:3000',{
+          method:'post',
+          headers: { "Content-Type": "application/json" },
+          body:JSON.stringify(data)
+        }).then(res => res.json())
+      .then(json => console.log(json));
+      }
+      catch(e){
+        console.log(e);
+      }  }
    }
  
     return (

@@ -31,15 +31,24 @@ const SignIn = ({navigation}) => {
                 email:email,
                 password:password
           };
-            await fetch('http://localhost:3000/login',{
+           await fetch('http://localhost:3000/login',{
           method:'post',
           headers: { "Content-Type": "application/json" },
           body:JSON.stringify(data)
         })
+        .then(result => (result.json()))
+        .then(out => (JSON.parse(out)))
+        .then(final => {
+          console.log(final.Info.NumberOfReadings)
+          if(final.Info.NumberOfReadings)
+            console.log("User is found");
+          else
+          console.log("User not found");
+        })
       }
       catch(e){
         console.log(e);
-      } }
+      }}
     }
     return (
             <View style={styles.container}>

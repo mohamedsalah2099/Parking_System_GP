@@ -1,33 +1,29 @@
 import React ,{useEffect}from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import SignIn from './components/signIn.js';
 import SignUp from './components/signUp.js';
 import ParkingMap from './components/parkingMap.js';
 import ParkingSlots from './components/ParkingSlots.js';
-export default function App() {
-  
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
  
+const Stack = createStackNavigator();
+  export default function App() {
 
   return (
-    <View style={styles.container}>
-      <LinearGradient style={styles.background} colors={['#0f4c5c', 'transparent']} />
-    <ParkingSlots/>
-    </View>
+    
+  <NavigationContainer>
+<Stack.Navigator initialRouteName="SignIn" screenOptions={{
+    headerShown: false
+  }}>
+  <Stack.Screen name="SignIn" component={SignIn}/>
+  <Stack.Screen name="SignUp" component={SignUp}/>
+  <Stack.Screen name="Map" component={ParkingMap}/>
+</Stack.Navigator>
+  </NavigationContainer>
+    
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor:'#0d1b2a',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },  background: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    height: 250,
-  },
-});
+
+

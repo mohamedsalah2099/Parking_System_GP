@@ -1,12 +1,12 @@
 import React,{useState} from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
-
+import { LinearGradient } from 'expo-linear-gradient';
 function validateEmail(val) {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(val);
   }
   
-const SignUp = () => {
+const SignUp = ({navigation}) => {
     const [name,setName]=useState("");
     const [email,setEmail]=useState("");
     const [password,setPassword]=useState("");
@@ -52,9 +52,9 @@ const SignUp = () => {
    }
  
     return (
-        <View style={styles.container} >
-
-
+        <View style={styles.container}>
+        <LinearGradient style={styles.background} colors={['#0f4c5c', 'transparent']} />
+        <View style={styles.container2} >
             <Text style={styles.TextStyle}>Sign up</Text>
             <View >
                 <Text style={styles.inputHeader}  >UserName</Text>
@@ -77,12 +77,12 @@ const SignUp = () => {
                 </TouchableOpacity>
                 <View style={{ flexDirection: 'row', marginTop: 10 }}>
                     <Text style={styles.touchStyle}>You already have an account?| </Text>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={()=>{navigation.navigate("SignIn")}}>
                         <Text style={styles.touchStyle}>Sign in</Text>
                     </TouchableOpacity>
                 </View>
             </View>
-
+</View>
         </View>
     );
 }
@@ -110,9 +110,20 @@ const styles = StyleSheet.create({
         fontFamily: "serif",
         fontWeight: "bold",
     },
-    container: {
+    container2: {
         width: "80%",
-    },
+    }, container: {
+        flex: 1,
+        backgroundColor:'#0d1b2a',
+        alignItems: 'center',
+        justifyContent: 'center',
+      },  background: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        height: 250,
+      },
     buttonStyle: {
         backgroundColor: "#0f4c5c",
         alignItems: "center",

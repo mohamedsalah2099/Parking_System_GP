@@ -41,7 +41,8 @@ const SignIn = ({navigation}) => {
         .then(final => {
           console.log(final.Info.NumberOfReadings)
           if(final.Info.NumberOfReadings)
-            console.log("User is found");
+           {console.log("User is found");
+            navigation.navigate('Map')}
           else
           console.log("User not found");
         })

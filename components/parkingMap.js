@@ -6,8 +6,10 @@ import * as Location from 'expo-location';
 import { getPreciseDistance} from 'geolib';
 import Modal from 'react-native-modal';
 import OpenMap from "react-native-open-map";
+import { useNavigation } from '@react-navigation/native';
 const ShowModal = (status)=>{
     console.log(status.message)
+    const navigation = useNavigation()
     return(
     <Modal
     isVisible={status.status}
@@ -23,7 +25,7 @@ const ShowModal = (status)=>{
     <TouchableOpacity style={styles.button} onPress={()=>{status.setStatus(false); openExternalMap(status.parking)}}>
   <Text style={{fontSize:16,fontWeight:"bold"}}>Direction</Text>
 </TouchableOpacity>
-<TouchableOpacity style={styles.button} onPress={()=>status.setStatus(false)}>
+<TouchableOpacity style={styles.button} onPress={()=>{status.setStatus(false);navigation.navigate('ParkingSlot')}}>
   <Text style={{fontSize:16,fontWeight:"bold"}}>Open parking</Text>
 </TouchableOpacity>
 <TouchableOpacity style={styles.button} onPress={()=>status.setStatus(false)}>
@@ -51,7 +53,7 @@ const ParkingMap = () => {
     const [long, setLong] = useState(31.25444)
     const [index,setIndex]= useState(0)
     const [enableModal,setEnableModal]=useState(false)
-    const getNearestParking=()=>{
+    const getNearestParking=({navigation})=>{
         let distances =[];
         parkingAreas.map(marker=>{
             const dist = getPreciseDistance({latitude:lat,longitude:long},marker.coordinate)

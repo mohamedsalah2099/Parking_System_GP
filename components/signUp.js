@@ -13,7 +13,7 @@ const SignUp = ({navigation}) => {
     const [nameError,setNameERR]=useState("");
     const [emailError,setEmailERR]=useState("");
     const [passError,setPassERR]=useState("")
-    const _onPressButton=async()=> {  
+    async function  _onPressButton()  {  
         if(email=="")
         setEmailERR("*Email field can't be empty");
         else if(!validateEmail(email)){
@@ -40,11 +40,12 @@ const SignUp = ({navigation}) => {
                 email:email,
                 password:password
           };
-            await fetch('http://localhost:3000',{
+            await fetch('http://10.0.2.2:3000',{
           method:'post',
           headers: { "Content-Type": "application/json" },
           body:JSON.stringify(data)
-        }).then(res => res.json())
+        })
+        .then(res => res.json())
       .then(json => console.log(json));
       }
       catch(e){

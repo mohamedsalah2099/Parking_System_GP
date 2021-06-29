@@ -3,8 +3,11 @@ import { StyleSheet, Text, View,TouchableOpacity,Image,ImageBackground } from 'r
 import { LinearGradient } from 'expo-linear-gradient';
 import Modal from 'react-native-modal';
 import * as ScreenOrientation from 'expo-screen-orientation';
-const ShowContentModal=(status)=>{
-    
+import { useNavigation } from '@react-navigation/native';
+import { LogBox } from 'react-native';
+const ShowContentModal=(   status )=>{
+  const navigation = useNavigation()
+    const [bookedDate,setBookedDate] =useState(0);
     const onPressSlot=()=>{
         console.log(status.allSlots.length)
         if(status.status==0){
@@ -15,28 +18,47 @@ const ShowContentModal=(status)=>{
                  }
              }
              status.setUpdatedSlots(status.allSlots)
-      
+           status.setEnableInfo(true)
+           status.setEnable(true)
+           var CurrentDate = new Date(); //Current Hours
+    
+           setBookedDate(CurrentDate);
         }
+        
     }
     return(
         <View>
         <Text style={{fontSize:18,color:"#0d1b2a",fontWeight:"bold"}}>{status.message}</Text>
-        <TouchableOpacity style={styles.button} onPress={()=>{status.setEnable(false); onPressSlot()}}>
+        { status.enableInfo==true?
+        <TouchableOpacity style={styles.button} onPress={()=>{status.setEnable(false); status.setEnableInfo(false); navigation.navigate({
+          name: "YourTicket",
+          params: { TicketDate: bookedDate ,slotIndex: status.emptySlotIndex,parkingName:status.parkingTitle},
+          
+        })  ; LogBox.ignoreLogs([
+          'Non-serializable values were found in the navigation state',
+        ]);}}>
+        <Text style={{fontSize:16,fontWeight:"bold"}}>Show your ticket</Text>
+      </TouchableOpacity>
+        :
+        <TouchableOpacity style={styles.button} onPress={()=>{status.setEnable(false); onPressSlot(); }}>
     <Text style={{fontSize:16,fontWeight:"bold"}}>Ok</Text>
   </TouchableOpacity>
+}
   {
-      status.status==0?
+      status.status==0 || status.enableInfo==true?
         <TouchableOpacity style={styles.button} onPress={()=>{status.setEnable(false); }}>
     <Text style={{fontSize:16,fontWeight:"bold"}}>Cancel</Text>
   </TouchableOpacity>:
   <Text></Text>
 }
+
   </View>
     );
 }
 const SlotAction=(status)=>{
-    
+     
  return(
+ 
   <Modal 
   isVisible={status.status}
   animationInTiming={2000}
@@ -46,27 +68,35 @@ const SlotAction=(status)=>{
   <View style={styles.modalContent}>
   {
       status.slotStatus==1?
-     <ShowContentModal message="Sorry,the slot is busy" status={status.slotStatus} setEnable={status.setStatus}/>
+     <ShowContentModal message="Sorry,the slot is busy" status={status.slotStatus} setEnable={status.setStatus} allSlots={status.AllSlots}/>
       :
-      status.slotStatus==2?
-    <ShowContentModal message="Sorry,the slot is reserved" status={status.slotStatus} setEnable={status.setStatus}/>
+      status.slotStatus==2 && status.enableInfo==false ?
+    <ShowContentModal message="Sorry,the slot is reserved" status={status.slotStatus} setEnable={status.setStatus} allSlots={status.AllSlots}
+   />
       :
-      <ShowContentModal message={"The slot will cost"+status.parking.cost+" /hour , Are you sure to continue?" }status={status.slotStatus} setEnable={status.setStatus}
-      emptySlotIndex={status.slotIndex} allSlots={status.AllSlots} setUpdatedSlots={status.setslots}/>
+      status.slotStatus==0 && status.enableInfo==true?
+      <ShowContentModal message={"Congratulations!! you reserved slot number "+status.slotIndex+" the ticket will expire after 1 hour." }status={status.slotStatus} setEnable={status.setStatus}
+      emptySlotIndex={status.slotIndex} setEnableInfo={status.setEnableInfo} enableInfo={status.enableInfo}/>
+      :
+      <ShowContentModal message={"The slot will cost "+status.parking.cost+" /hour  Are you sure to continue?" }status={status.slotStatus} setEnable={status.setStatus}
+      emptySlotIndex={status.slotIndex} allSlots={status.AllSlots} setUpdatedSlots={status.setslots}  setEnableInfo={status.setEnableInfo} enableInfo={status.enableInfo}
+      parkingTitle={status.parking.title} />
       
   }
 
 </View>
 </Modal>
+
  );
 }
-export default function ParkingSlots() {
+function ParkingSlots({navigation}) {
     const Parking = {title:"Tahrir Parking",cost:7,availableSlot:5,totalSlots:10,slots:[{status:1,sensor:102},{status:0,sensor:103},{status:2,sensor:104},
         {status:0,sensor:105},{status:1,sensor:106},{status:2,sensor:107},{status:0,sensor:108},{status:1,sensor:109},{status:0,sensor:110},{status:0,sensor:111}]}
         const [slots,setSlots]= useState(Parking.slots);
         const [enable,setEnable]= useState(false);
         const [slotStatus,setSlotStatus] = useState(0);
         const [Index,setIndex] = useState(0)
+        const [enableInfo,setEnableInfo] = useState(false);
         useEffect(() => {
         lockOrientation()
         
@@ -77,17 +107,19 @@ export default function ParkingSlots() {
       }
       
   return (
+     
     <View style={styles.container}>
       <LinearGradient style={styles.background} colors={['#0f4c5c', 'transparent']} />
       <Text style={[styles.headerStyle,{top:20, left:10,}]}>Tahrir Parking</Text>
    <Text style={[styles.headerStyle,{top:20, left:300,}]}>Available slots: 5</Text>
+    
    <View style={{justifyContent:"center",margin:"auto",flexWrap:"wrap",flexDirection:"row",width:"100%",height:"100%",marginTop:80
 }}>
   {
        slots.map((slot,index)=>(
         
                <TouchableOpacity key={index}style={{backgroundColor:"#fff",width:70,height:100,marginHorizontal:20 ,marginBottom:20}}
-               onPress={()=>{setEnable(true);setSlotStatus(slot.status);setIndex(index)}}>
+               onPress={()=>{setEnable(true);setSlotStatus(slot.status);setIndex(index) ; }}>
                   <ImageBackground style={{width:"100%",height:"100%"}}  source={require('../assets/emptySlot.jpg')}>
                       {
                          slot.status==1? 
@@ -105,8 +137,11 @@ export default function ParkingSlots() {
    }
    
    </View>
-   <SlotAction status={enable} setStatus={setEnable} slotStatus={slotStatus}  parking={Parking} slotIndex={Index} AllSlots={slots} setslots={setSlots}/>
+   <SlotAction status={enable} setStatus={setEnable} enableInfo={enableInfo} setEnableInfo={setEnableInfo} slotStatus={slotStatus}  parking={Parking} slotIndex={Index} AllSlots={slots} setslots={setSlots}  />
+  
+   
     </View>
+    
   );
 }
 
@@ -151,3 +186,4 @@ const styles = StyleSheet.create({
     
   }
 });
+export { ParkingSlots,ShowContentModal}

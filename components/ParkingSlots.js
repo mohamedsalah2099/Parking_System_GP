@@ -46,10 +46,12 @@ const ShowContentModal=(   status )=>{
         <View>
         <Text style={{fontSize:18,color:"#0d1b2a",fontWeight:"bold"}}>{status.message}</Text>
         { status.enableInfo==true?
+        <View >
         <TouchableOpacity style={styles.button} onPress={()=>{navigateToTicket() 
            }}>
         <Text style={{fontSize:16,fontWeight:"bold"}}>Show your ticket</Text>
       </TouchableOpacity>
+      </View>
         :
         <TouchableOpacity style={styles.button} onPress={()=>{status.setEnable(false);   onPressSlot(); }}>
     <Text style={{fontSize:16,fontWeight:"bold"}}>Ok</Text>
@@ -57,7 +59,7 @@ const ShowContentModal=(   status )=>{
 }
   {
       status.status==0 || status.enableInfo==true?
-        <TouchableOpacity style={styles.button} onPress={()=>{status.setEnable(false); status.setEnableInfo(false); }}>
+        <TouchableOpacity style={[styles.button]} onPress={()=>{status.setEnable(false); status.setEnableInfo(false); }}>
     <Text style={{fontSize:16,fontWeight:"bold"}}>Cancel</Text>
   </TouchableOpacity>:
   <Text></Text>

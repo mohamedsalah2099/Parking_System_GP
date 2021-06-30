@@ -4,12 +4,52 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import CountDown from 'react-native-countdown-component';
 import QRCode from 'react-native-qrcode-generator';
 import { LinearGradient } from 'expo-linear-gradient';
+function Countdown(status) {
+  console.log(status.userReservedtime)
+  
+return(
+  
+  <CountDown
+  
+  size={30}
+  until={status.userReservedtime}
+  onChange={console.log("chaged")}
+  digitStyle={{backgroundColor: '#FFF', borderWidth: 2, borderColor: '#1CC625'}}
+  digitTxtStyle={{color: '#1CC625'}}
+  timeLabelStyle={{color: 'red', fontWeight: 'bold'}}
+  separatorStyle={{color: '#1CC625'}}
+  timeToShow={['H', 'M', 'S']}
+  timeLabels={{m: null, s: null}}
+  showSeparator
+/>
+  
+)
+  
+}
 export default function YourTicket({ route }) {
-    const [seconds,setSeconds] = useState( 0)
+    const [date,setDate] = useState(0)
+    const [seconds,setSeconds] = useState(0)
+    const [slotInd,setSlotInd] = useState(0)
+    const [parkingN,setParkN] = useState("")
     const [qrString,setQrString] = useState("")
-    
-   
-    useEffect(() => {
+    var Seconds;
+    useEffect(()=>{
+       route.params?console.log("yes"):console.log("no")
+       if(route.params){
+        setDate(route.params.TicketDate);
+        setSlotInd(route.params.slotIndex)
+        setSeconds(route.params.countDown)
+        setParkN(route.params.parkingName)
+        setQrString(date+parkingN+slotInd);
+       }else{
+        setDate(0);
+        setSlotInd(2)
+         setSeconds(3000)
+        setParkN("gddd")
+        setQrString(date+parkingN+slotInd);
+       }
+    })
+   /* useEffect(() => {
       console.log(route.params.TicketDate)
      
        setQrString(route.params.TicketDate+route.params.parkingName+ route.params.slotIndex);
@@ -19,32 +59,28 @@ export default function YourTicket({ route }) {
    
     const lockOrientation = async () => {
         await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT)
-      }
+      }*/
     return (
       <View style={styles.container}>
       <LinearGradient style={styles.background} colors={['#0f4c5c', 'transparent']} />
-      <View style={{marginVertical:50}}>
-        <CountDown
+       {   seconds?
+        <View>
+             <View style={{marginVertical:50}}>
         
-        size={30}
-        until={route.params.countDown}
-        onFinish={() => alert('Finished')}
-        digitStyle={{backgroundColor: '#FFF', borderWidth: 2, borderColor: '#1CC625'}}
-        digitTxtStyle={{color: '#1CC625'}}
-        timeLabelStyle={{color: 'red', fontWeight: 'bold'}}
-        separatorStyle={{color: '#1CC625'}}
-        timeToShow={['H', 'M', 'S']}
-        timeLabels={{m: null, s: null}}
-        showSeparator
-      />
-      </View>
-      <View style={{justifyContent:"center",alignItems:"center"}}>
-        <QRCode
-          value={qrString}
-          size={300}
-          bgColor='black'
-          fgColor='white'/>
-          </View>
+             <Countdown userReservedtime={route.params?route.params.countDown:seconds} />
+             </View>
+             <View style={{justifyContent:"center",alignItems:"center"}}>
+               <QRCode
+                 value={qrString}
+                 size={300}
+                 bgColor='black'
+                 fgColor='white'/>
+                 </View> 
+                 </View>
+                 :
+                 <Text>There is no reserved slots</Text>
+       }
+  
       </View>
     );
 }

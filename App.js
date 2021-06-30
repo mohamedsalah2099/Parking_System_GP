@@ -27,8 +27,11 @@ function CustomDrawerContent(props) {
     </DrawerContentScrollView>
   );
 }
-function Root() {
-
+function Root({navigation}) {
+const [TicDate,setTicDate]= useState(0);
+const [countDwn,setCountDwn] = useState(0);
+const [slotIndx,setSlotIndx] =useState(0);
+const [ParkName,setParkName] = useState("")
 return (
   
     
@@ -36,9 +39,9 @@ return (
     activeTintColor: '#0f4c5c',
     itemStyle: { marginVertical: 5 },
   }}>
-  <Drawer.Screen name="ParkingMap" component={ParkingMap}/>
-  <Drawer.Screen name="ParkingSlots" component={ParkingSlots}/>
-  <Drawer.Screen name="YourTicket" component={YourTicket}/>
+  <Drawer.Screen name="ParkingMap" component={ParkingMap}  />
+  <Drawer.Screen name="ParkingSlots" component={ParkingSlots} />
+  <Drawer.Screen name="YourTicket" component={YourTicket}  />
   
 </Drawer.Navigator>
 

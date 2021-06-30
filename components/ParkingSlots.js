@@ -27,27 +27,37 @@ const ShowContentModal=(   status )=>{
         }
         
     }
+    const navigateToTicket=()=>{
+      status.setEnable(false); 
+      status.setEnableInfo(false);
+      var endDate = new Date();
+      // Do your operations
+     var Seconds =Math.round( ((bookedDate -endDate.getTime()) / 1000)+15*60);
+     console.log(navigation);
+      navigation.navigate({
+        name: "YourTicket",
+        params: { TicketDate: bookedDate ,countDown:Seconds,slotIndex: status.emptySlotIndex,parkingName:status.parkingTitle},
+        
+      })  ; LogBox.ignoreLogs([
+        'Non-serializable values were found in the navigation state',
+      ]);
+    }
     return(
         <View>
         <Text style={{fontSize:18,color:"#0d1b2a",fontWeight:"bold"}}>{status.message}</Text>
         { status.enableInfo==true?
-        <TouchableOpacity style={styles.button} onPress={()=>{status.setEnable(false); status.setEnableInfo(false); navigation.navigate({
-          name: "YourTicket",
-          params: { TicketDate: bookedDate ,slotIndex: status.emptySlotIndex,parkingName:status.parkingTitle},
-          
-        })  ; LogBox.ignoreLogs([
-          'Non-serializable values were found in the navigation state',
-        ]);}}>
+        <TouchableOpacity style={styles.button} onPress={()=>{navigateToTicket() 
+           }}>
         <Text style={{fontSize:16,fontWeight:"bold"}}>Show your ticket</Text>
       </TouchableOpacity>
         :
-        <TouchableOpacity style={styles.button} onPress={()=>{status.setEnable(false); onPressSlot(); }}>
+        <TouchableOpacity style={styles.button} onPress={()=>{status.setEnable(false);   onPressSlot(); }}>
     <Text style={{fontSize:16,fontWeight:"bold"}}>Ok</Text>
   </TouchableOpacity>
 }
   {
       status.status==0 || status.enableInfo==true?
-        <TouchableOpacity style={styles.button} onPress={()=>{status.setEnable(false); }}>
+        <TouchableOpacity style={styles.button} onPress={()=>{status.setEnable(false); status.setEnableInfo(false); }}>
     <Text style={{fontSize:16,fontWeight:"bold"}}>Cancel</Text>
   </TouchableOpacity>:
   <Text></Text>

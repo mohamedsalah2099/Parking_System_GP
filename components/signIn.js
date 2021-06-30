@@ -1,5 +1,5 @@
 import React ,{useState}from 'react';
-import { StyleSheet, Text, View, TextInput ,TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, TextInput ,TouchableOpacity,ImageBackground} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 function validateEmail(val) {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -53,7 +53,7 @@ const SignIn = ({navigation}) => {
     }
     return (
             <View style={styles.container}>
-      <LinearGradient style={styles.background} colors={['#0f4c5c', 'transparent']} />
+    <ImageBackground style={{justifyContent:"center",alignItems:"center", width:"100%",height:"100%"}}  source={require('../assets/background.jpg')}>
         <View style={styles.container2} >
       
             <Text style={styles.TextStyle}>Sign in</Text>
@@ -80,6 +80,7 @@ const SignIn = ({navigation}) => {
             </View>
             
         </View>
+        </ImageBackground>
         </View>
     );
 }
@@ -109,6 +110,7 @@ const styles = StyleSheet.create({
     },
     container2: {
         width: "80%",
+         
     }, container: {
         flex: 1,
         backgroundColor:'#0d1b2a',

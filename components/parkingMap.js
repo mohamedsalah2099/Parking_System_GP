@@ -21,7 +21,7 @@ const ShowModal = (status)=>{
     backdropTransitionOutTiming={2000}
   >
     <View style={styles.modalContent}>
-    <Text style={{fontSize:18,color:"#0d1b2a",fontWeight:"bold"}}>{status.message}</Text>
+    <Text style={{fontSize:20,color:"#0d1b2a",fontWeight:"bold"}}>{status.message}</Text>
     <Image source={require('../assets/animatedParking.gif')} resizeMode='contain' style={{width:"100%"}} />
     <View style={{flexDirection:"row"}}>
     <TouchableOpacity style={styles.button} onPress={()=>{status.setStatus(false); openExternalMap(status.parking)}}>
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     },NearparkBtn:{
         alignItems:"center",
         justifyContent:"center",
-        backgroundColor: "#0d1b2a",
+        backgroundColor: "#0f4c5c",
         width: 150,
         height: 50,
         position: "absolute",

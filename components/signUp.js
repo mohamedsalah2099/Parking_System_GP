@@ -1,5 +1,5 @@
 import React,{useState} from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity,ImageBackground } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 function validateEmail(val) {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -55,7 +55,7 @@ const SignUp = ({navigation}) => {
  
     return (
         <View style={styles.container}>
-        <LinearGradient style={styles.background} colors={['#0f4c5c', 'transparent']} />
+          <ImageBackground style={{justifyContent:"center",alignItems:"center", width:"100%",height:"100%"}}  source={require('../assets/background.jpg')}>
         <View style={styles.container2} >
             <Text style={styles.TextStyle}>Sign up</Text>
             <View >
@@ -85,6 +85,7 @@ const SignUp = ({navigation}) => {
                 </View>
             </View>
 </View>
+</ImageBackground>
         </View>
     );
 }

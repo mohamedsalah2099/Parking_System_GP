@@ -5,6 +5,7 @@ import Modal from 'react-native-modal';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { useNavigation } from '@react-navigation/native';
 import { LogBox } from 'react-native';
+import Swiper from 'react-native-swiper';
 const ShowContentModal=(   status )=>{
   const navigation = useNavigation()
     const [bookedDate,setBookedDate] =useState(0);
@@ -91,7 +92,8 @@ const SlotAction=(status)=>{
 }
 function ParkingSlots({navigation}) {
     const Parking = {title:"Tahrir Parking",cost:7,availableSlot:5,totalSlots:10,slots:[{status:1,sensor:102},{status:0,sensor:103},{status:2,sensor:104},
-        {status:0,sensor:105},{status:1,sensor:106},{status:2,sensor:107},{status:0,sensor:108},{status:1,sensor:109},{status:0,sensor:110},{status:0,sensor:111}]}
+        {status:0,sensor:105},{status:1,sensor:106},{status:2,sensor:107},{status:0,sensor:108},{status:1,sensor:109},{status:0,sensor:110},
+        {status:0,sensor:111},{status:0,sensor:112},{status:0,sensor:113},{status:0,sensor:114},{status:0,sensor:115},{status:0,sensor:116},{status:0,sensor:117}]}
         const [slots,setSlots]= useState(Parking.slots);
         const [enable,setEnable]= useState(false);
         const [slotStatus,setSlotStatus] = useState(0);
@@ -113,12 +115,43 @@ function ParkingSlots({navigation}) {
       <Text style={[styles.headerStyle,{top:20, left:10,}]}>Tahrir Parking</Text>
    <Text style={[styles.headerStyle,{top:20, left:300,}]}>Available slots: 5</Text>
     
-   <View style={{justifyContent:"center",margin:"auto",flexWrap:"wrap",flexDirection:"row",width:"100%",height:"100%",marginTop:80
-}}>
+   <View style={{justifyContent:"center", margin:"auto",width:"100%",height:"100%",marginTop:80}}>
+<Swiper  dot={
+            <View
+              style={{
+                backgroundColor: 'rgba(255,255,255,.3)',
+                width: 13,
+                height: 13,
+                borderRadius: 7,
+              marginBottom:10,
+               marginLeft: 7,
+               marginRight: 7
+              }}
+            />
+          }
+          activeDot={
+            <View
+              style={{
+                backgroundColor: '#fff',
+                width: 13,
+                height: 13,
+                borderRadius: 7,
+                marginBottom:10,
+               marginLeft: 7,
+               marginRight: 7
+              }}
+            />
+          }
+          paginationStyle={{
+            bottom: 70
+          }}
+          loop={false}>
+  <View style={{justifyContent:"center", flexWrap:"wrap",flexDirection:"row"}}>
   {
-       slots.map((slot,index)=>(
-        
-               <TouchableOpacity key={index}style={{backgroundColor:"#fff",width:70,height:100,marginHorizontal:20 ,marginBottom:20}}
+       slots.filter((slot,Index) => 
+       Index<8).map((slot,index)=>(
+           
+               <TouchableOpacity key={index}style={{backgroundColor:"#fff",width:70,height:100,marginHorizontal:30 ,marginBottom:20}}
                onPress={()=>{setEnable(true);setSlotStatus(slot.status);setIndex(index) ; }}>
                   <ImageBackground style={{width:"100%",height:"100%"}}  source={require('../assets/emptySlot.jpg')}>
                       {
@@ -132,9 +165,35 @@ function ParkingSlots({navigation}) {
                       }
                   </ImageBackground>
                </TouchableOpacity>
+              
                
        ))
    }
+   </View>
+   <View style={{justifyContent:"center",  flexWrap:"wrap",flexDirection:"row"}}>
+  {
+       slots.filter((slot,Index) => 
+         Index>=8).map((slot,index)=>(
+           
+               <TouchableOpacity key={index}style={{backgroundColor:"#fff",width:70,height:100,marginHorizontal:30 ,marginBottom:20}}
+               onPress={()=>{setEnable(true);setSlotStatus(slot.status);setIndex(index) ; }}>
+                  <ImageBackground style={{width:"100%",height:"100%"}}  source={require('../assets/emptySlot.jpg')}>
+                      {
+                         slot.status==1? 
+                         <Image style={{width:"100%",height:"100%",resizeMode:"contain"}}  source={require('../assets/car.png')}/>
+                         :
+                        slot.status==2?
+                        <Image style={{width:"100%",height:"100%",resizeMode:"contain"}}  source={require('../assets/reserved.png')}/>
+                        :
+                        <Text></Text>
+                      }
+                  </ImageBackground>
+               </TouchableOpacity>
+              
+       ))
+   }
+   </View>
+   </Swiper>
    
    </View>
    <SlotAction status={enable} setStatus={setEnable} enableInfo={enableInfo} setEnableInfo={setEnableInfo} slotStatus={slotStatus}  parking={Parking} slotIndex={Index} AllSlots={slots} setslots={setSlots}  />

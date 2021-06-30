@@ -27,7 +27,7 @@ const ShowModal = (status)=>{
     <TouchableOpacity style={styles.button} onPress={()=>{status.setStatus(false); openExternalMap(status.parking)}}>
   <Text style={{fontSize:16,fontWeight:"bold"}}>Direction</Text>
 </TouchableOpacity>
-<TouchableOpacity style={styles.button} onPress={()=>{status.setStatus(false);navigation.navigate('ParkingSlot')}}>
+<TouchableOpacity style={styles.button} onPress={()=>{status.setStatus(false);navigation.navigate('ParkingSlots')}}>
   <Text style={{fontSize:16,fontWeight:"bold"}}>Open parking</Text>
 </TouchableOpacity>
 <TouchableOpacity style={styles.button} onPress={()=>status.setStatus(false)}>

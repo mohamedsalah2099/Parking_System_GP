@@ -7,6 +7,8 @@ import { getPreciseDistance} from 'geolib';
 import Modal from 'react-native-modal';
 import OpenMap from "react-native-open-map";
 import { useNavigation } from '@react-navigation/native';
+ 
+ 
 const ShowModal = (status)=>{
     console.log(status.message)
     const navigation = useNavigation()
@@ -46,6 +48,7 @@ const openExternalMap = (parking)=>{
       });
 }
 const ParkingMap = () => {
+     
     const parkingAreas = [{coordinate: {latitude: 30.064674220822372, longitude:  31.29295170263593} , title:"ramsis parking" ,slots:5,ticketCost:"7 LE"},
     {coordinate:{latitude: 30.06165790645091, longitude: 31.35745664947928 },title: "abasia parking",slots:7,ticketCost:"5 LE"},
     { coordinate:{latitude: 30.074107720548067, longitude: 31.25213921043556},title: "tahrir Parking",slots:3,ticketCost:"10 LE"},]
@@ -92,6 +95,7 @@ const ParkingMap = () => {
     };
 return(
     <View style={styles.container} >
+ 
 <MapView style={[styles.map, { flex: 1 }]}
                 provider={MapView.PROVIDER_GOOGLE}
                 region={{

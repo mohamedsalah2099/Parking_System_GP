@@ -41,15 +41,15 @@ const SignIn = ({navigation}) => {
         .then(final => {
           console.log(final.Info.NumberOfReadings)
           if(final.Info.NumberOfReadings)
-           {console.log("User is found");
-            navigation.navigate('Map')}
+            console.log("User is found");
           else
           console.log("User not found");
         })
       }
       catch(e){
         console.log(e);
-      }}
+      }
+    navigation.navigate("Root")}
     }
     return (
             <View style={styles.container}>

@@ -94,8 +94,52 @@ app.post ('/login', async (req, res) => {
   } catch (e) {
     console.log (e);
   }
+});
 
-  // res.send("done");
+
+// Get Sensor Data //
+app.post ('/getSensor', async (req, res) => {
+  res.header ('Access-Control-Allow-Origin', '*');
+  res.header (
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  );
+  try {
+    await fetch ('https://beta.masterofthings.com/GetSensorReadingValueList', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true,
+      },
+      body: JSON.stringify ({
+        SensorId: 236,
+        Limit: 1,
+        OrderBy: [
+          {
+            reading: 'TimeStamp',
+            orderType: 'desc',
+          },
+        ],
+        Auth: {
+          DriverManagerId: 'iTi_2021_Parking',
+          DriverManagerPassword: 'iTi_2021_Parkingpass',
+        },
+      }),
+    })
+      .then (res => res.json ())
+      .then (value => {
+        if (value.Result) {
+          console.log (value.Result[0].currentNearnessLevel);
+          res.json (value.Result[0].currentNearnessLevel);
+        } else {
+          console.log ('Slot Not Found');
+          res.json ('Slot Not Found');
+        }
+      });
+  } catch (e) {
+    console.log (e);
+  }
 });
 
 app.listen (port, () => {

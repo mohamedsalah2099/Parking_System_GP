@@ -162,13 +162,13 @@ app.post ('/postSensor', async (req, res) => {
       body: JSON.stringify ({
         Package: {
           SensorInfo: {
-            SensorId: 236,
+            SensorId: req.body.sensorID,
           },
           SensorData: {
             appVersion: 1,
             phoneVersion: 2,
             captureTime: 1,
-            currentNearnessLevel: req.body.slotStatus,
+            currentNearnessLevel: req.body.sensorStatus,
           },
         },
         Auth: {
@@ -177,6 +177,7 @@ app.post ('/postSensor', async (req, res) => {
         },
       }),
     })
+    // console.log(req.body.sensorID);
     console.log("Sensor Data Sent");
     res.json("Sensor Data Sent")
   } catch (e) {

@@ -1,5 +1,6 @@
 import React,{useState} from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity,ImageBackground } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity,ImageBackground ,Image} from 'react-native';
+import Modal from 'react-native-modal';
 import { LinearGradient } from 'expo-linear-gradient';
 function validateEmail(val) {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -13,6 +14,7 @@ const SignUp = ({navigation}) => {
     const [nameError,setNameERR]=useState("");
     const [emailError,setEmailERR]=useState("");
     const [passError,setPassERR]=useState("")
+    const [enableModal,setEnableModal] = useState(false)
     async function  _onPressButton()  {  
         if(email=="")
         setEmailERR("*Email field can't be empty");
@@ -40,17 +42,16 @@ const SignUp = ({navigation}) => {
                 email:email,
                 password:password
           };
-            await fetch('http://10.0.2.2:3000',{
-          method:'post',
-          headers: { "Content-Type": "application/json" },
-          body:JSON.stringify(data)
-        })
-        .then(res => res.json())
-      .then(json => console.log(json));
-      }
-      catch(e){
-        console.log(e);
-      }  }
+          await fetch('https://nervous-yak-55.loca.lt',{
+            method:'post',
+            headers: { "Content-Type": "application/json" },
+            body:JSON.stringify(data)
+          }).then(res =>{res.json() ;})
+        .then(json => {console.log(json);setEnableModal(true)});
+        }
+        catch(e){
+          console.log(e);
+        }  }
    }
  
     return (
@@ -85,6 +86,24 @@ const SignUp = ({navigation}) => {
                 </View>
             </View>
 </View>
+
+<Modal
+    isVisible={enableModal}
+    animationInTiming={2000}
+    animationOutTiming={2000}
+    backdropTransitionInTiming={2000}
+    backdropTransitionOutTiming={2000}
+  >
+    <View style={styles.modalContent}>
+    <Image source={require('../assets/congarts.gif')} resizeMode='contain' style={{height:"50%", width:"100%"}} />
+    <Text style={{fontSize:20,color:"#0d1b2a",fontWeight:"bold",textAlign:"center"}}>Welcome in our application.please wait until receive confirmation mail from admin . and then sign in again</Text>
+    <View style={{flexDirection:"row"}}>
+<TouchableOpacity style={styles.button} onPress={()=>setEnableModal(false)}>
+  <Text style={{fontSize:16,fontWeight:"bold"}}>OK</Text>
+</TouchableOpacity>
+</View>
+</View>
+  </Modal>
 </ImageBackground>
         </View>
     );
@@ -145,6 +164,23 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         fontSize: 16,
 
-    }
+    },button: {
+        backgroundColor: 'lightblue',
+        padding: 12,
+        margin: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 4,
+        borderColor: 'rgba(0, 0, 0, 0.1)',
+        
+      },
+      modalContent: {
+        backgroundColor: 'white',
+        padding: 22,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 4,
+        borderColor: 'rgba(0, 0, 0, 0.1)',
+      }
 });
 export default SignUp;

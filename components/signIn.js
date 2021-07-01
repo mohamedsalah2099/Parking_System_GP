@@ -1,6 +1,7 @@
 import React ,{useState}from 'react';
 import { StyleSheet, Text, View, TextInput ,TouchableOpacity,ImageBackground} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import Modal from 'react-native-modal';
 function validateEmail(val) {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(val);
@@ -10,6 +11,7 @@ const SignIn = ({navigation}) => {
     const [password,setPassword]=useState("");
     const [emailError,setEmailERR]=useState("");
     const [passError,setPassERR]=useState("")
+    const [enableModal,setEnableModal] = useState(false)
     const _onPressButton=async()=> {
         if(email=="")
         setEmailERR("*Email field can't be empty");
@@ -31,25 +33,24 @@ const SignIn = ({navigation}) => {
                 email:email,
                 password:password
           };
-           await fetch('http://localhost:3000/login',{
-          method:'post',
-          headers: { "Content-Type": "application/json" },
-          body:JSON.stringify(data)
-        })
-        .then(result => (result.json()))
-        .then(out => (JSON.parse(out)))
-        .then(final => {
-          console.log(final.Info.NumberOfReadings)
-          if(final.Info.NumberOfReadings)
-            console.log("User is found");
-          else
-          console.log("User not found");
-        })
-      }
-      catch(e){
-        console.log(e);
-      }
-    navigation.navigate("Root")}
+          await fetch('https://nervous-yak-55.loca.lt/login',{
+            method:'post',
+            headers: { "Content-Type": "application/json" },
+            body:JSON.stringify(data)
+          }).then(res => res.json())
+        .then(json => {console.log(json)
+            if(json=="Not Found"){
+     setEnableModal(true)
+            }else{
+                navigation.navigate("Root");
+            }
+        });
+        }
+        catch(e){
+          console.log(e);
+          
+        }
+   }
     }
     return (
             <View style={styles.container}>
@@ -80,6 +81,23 @@ const SignIn = ({navigation}) => {
             </View>
             
         </View>
+        <Modal
+    isVisible={enableModal}
+    animationInTiming={2000}
+    animationOutTiming={2000}
+    backdropTransitionInTiming={2000}
+    backdropTransitionOutTiming={2000}
+  >
+    <View style={styles.modalContent}>
+    
+    <Text style={{fontSize:20,color:"#0d1b2a",fontWeight:"bold",textAlign:"center"}}>The email or password is incorrect.please try again.</Text>
+    <View style={{flexDirection:"row"}}>
+<TouchableOpacity style={styles.button} onPress={()=>setEnableModal(false)}>
+  <Text style={{fontSize:16,fontWeight:"bold"}}>OK</Text>
+</TouchableOpacity>
+</View>
+</View>
+  </Modal>
         </ImageBackground>
         </View>
     );
@@ -142,5 +160,23 @@ const styles = StyleSheet.create({
         fontSize:16,
        
     }
+    ,button: {
+        backgroundColor: 'lightblue',
+        padding: 12,
+        margin: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 4,
+        borderColor: 'rgba(0, 0, 0, 0.1)',
+        
+      },
+      modalContent: {
+        backgroundColor: 'white',
+        padding: 22,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 4,
+        borderColor: 'rgba(0, 0, 0, 0.1)',
+      }
 });
 export default SignIn;

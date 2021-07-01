@@ -44,7 +44,7 @@ export default function YourTicket({ route }) {
        }else{
         setDate(0);
         setSlotInd(2)
-         setSeconds(3000)
+         setSeconds(0)
         setParkN("gddd")
         setQrString(date+parkingN+slotInd);
        }
@@ -78,7 +78,9 @@ export default function YourTicket({ route }) {
                  </View> 
                  </View>
                  :
-                 <Text>There is no reserved slots</Text>
+                 <View style={{justifyContent:"center",alignItems:"center"}}>
+                 <Text style={{marginTop:280,fontSize:20,color:'white',fontWeight:"bold"}}>There is no reserved slots</Text>
+                 </View>
        }
   
       </View>

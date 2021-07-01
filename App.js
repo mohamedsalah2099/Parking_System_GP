@@ -56,7 +56,7 @@ return (
   return (
     
     <NavigationContainer>
-    <Stack.Navigator initialRouteName='Root' headerMode="false">
+    <Stack.Navigator initialRouteName='SignIn' headerMode="false">
       <Stack.Screen name="SignIn" component={SignIn}/>
       <Stack.Screen name="SignUp" component={SignUp}/>
       <Stack.Screen name="Root" component={Root}  />

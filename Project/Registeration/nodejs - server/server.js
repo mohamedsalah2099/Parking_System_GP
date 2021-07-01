@@ -185,6 +185,53 @@ app.post ('/postSensor', async (req, res) => {
 });
 
 
+
+// Get Parking Data //
+app.post ('/getParking', async (req, res) => {
+  res.header ('Access-Control-Allow-Origin', '*');
+  res.header (
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  );
+  try {
+    await fetch ('https://beta.masterofthings.com/GetSensorReadingValueList', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true,
+      },
+      body: JSON.stringify ({
+        SensorId: 255,
+        Limit: 1,
+        OrderBy: [
+          {
+            reading: 'TimeStamp',
+            orderType: 'desc',
+          },
+        ],
+        Auth: {
+          DriverManagerId: 'iTi_2021_Parking',
+          DriverManagerPassword: 'iTi_2021_Parkingpass',
+        },
+      }),
+    })
+      .then (res => res.json ())
+      .then (value => {
+        if (value.Result) {
+          console.log (value.Result[0]);
+          res.json (value.Result[0]);
+        } else {
+          console.log ('Not Found');
+          res.json ('Not Found');
+        }
+      });
+  } catch (e) {
+    console.log (e);
+  }
+});
+
+
 app.listen (port, () => {
   console.log (`Listening at http://localhost:${port}`);
 });

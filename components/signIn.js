@@ -1,6 +1,7 @@
 import React ,{useState}from 'react';
 import { StyleSheet, Text, View, TextInput ,TouchableOpacity,ImageBackground} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+
 import Modal from 'react-native-modal';
 function validateEmail(val) {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -33,7 +34,7 @@ const SignIn = ({navigation}) => {
                 email:email,
                 password:password
           };
-          await fetch('https://nervous-yak-55.loca.lt/login',{
+          await fetch('https://spotty-chipmunk-82.loca.lt/login',{
             method:'post',
             headers: { "Content-Type": "application/json" },
             body:JSON.stringify(data)

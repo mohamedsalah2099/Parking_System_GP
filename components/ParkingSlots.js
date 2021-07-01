@@ -1,10 +1,11 @@
 import React ,{useEffect,useState}from 'react';
-import { StyleSheet, Text, View,TouchableOpacity,Image,ImageBackground } from 'react-native';
+import { StyleSheet, Text, View,TouchableOpacity,Image,ImageBackground,Button } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Modal from 'react-native-modal';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { useNavigation } from '@react-navigation/native';
 import { LogBox } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import Swiper from 'react-native-swiper';
 const ShowContentModal=(   status )=>{
   const navigation = useNavigation()
@@ -103,18 +104,48 @@ const SlotAction=(status)=>{
  );
 }
 function ParkingSlots({navigation}) {
-    const Parking = {title:"Tahrir Parking",cost:7,availableSlot:5,totalSlots:10,slots:[{status:1,sensor:102},{status:0,sensor:103},{status:2,sensor:104},
-        {status:0,sensor:105},{status:1,sensor:106},{status:2,sensor:107},{status:0,sensor:108},{status:1,sensor:109},{status:0,sensor:110},
-        {status:0,sensor:111},{status:0,sensor:112},{status:0,sensor:113},{status:0,sensor:114},{status:0,sensor:115},{status:0,sensor:116},{status:0,sensor:117}]}
+    const Parking = {title:"Tahrir Parking",cost:7,availableSlot:5,totalSlots:10,slots:[{status:0,sensor:218},{status:0,sensor:219},
+        {status:0,sensor:220},{status:1,sensor:221},{status:2,sensor:222},{status:0,sensor:223},{status:1,sensor:224},{status:0,sensor:225},
+        {status:0,sensor:226},{status:0,sensor:227},{status:0,sensor:228},{status:0,sensor:229},{status:0,sensor:230},{status:0,sensor:231},{status:0,sensor:232},{status:2,sensor:233}]}
         const [slots,setSlots]= useState(Parking.slots);
         const [enable,setEnable]= useState(false);
         const [slotStatus,setSlotStatus] = useState(0);
         const [Index,setIndex] = useState(0)
         const [enableInfo,setEnableInfo] = useState(false);
-        useEffect(() => {
-        lockOrientation()
+        const [showSlots,setShowSlots]=useState(false)
+        async function getSlotsData(slot,index){
         
-      }, [])
+          try {
+            const sens = 234
+            await fetch ('https://spotty-chipmunk-82.loca.lt/getSensor?sensor='+slot.sensor, {
+              method: 'post',
+              headers: {'Content-Type': 'application/json'},
+            })
+              .then (res => res.json ())
+              .then (json =>{ console.log(JSON.stringify (json))
+              if(Math.round(JSON.stringify (json))==5){
+                 slot.status = 0
+              }else{
+                slot.status=1
+              }  if(index==15){
+                setShowSlots(true)
+            
+              }}
+            );
+          } catch (e) {
+            console.log (e);
+          }
+        
+        
+        }
+        
+        
+      useEffect(() => {
+        lockOrientation()
+        slots.map((slot,index)=>
+        getSlotsData(slot,index))
+        console.log("yes")
+      } ,[slots])
     
       const lockOrientation = async () => {
         await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE)
@@ -126,40 +157,17 @@ function ParkingSlots({navigation}) {
       <LinearGradient style={styles.background} colors={['#0f4c5c', 'transparent']} />
       <Text style={[styles.headerStyle,{top:20, left:10,}]}>Tahrir Parking</Text>
    <Text style={[styles.headerStyle,{top:20, left:300,}]}>Available slots: 5</Text>
-    
+   
+   <TouchableOpacity  style={styles.refreshBTn} onPress={()=>{
+        console.log("yes")}}><Text style={{color:"white"}}>Refresh</Text></TouchableOpacity>
+
+  
    <View style={{justifyContent:"center", margin:"auto",width:"100%",height:"100%",marginTop:80}}>
-<Swiper  dot={
-            <View
-              style={{
-                backgroundColor: 'rgba(255,255,255,.3)',
-                width: 13,
-                height: 13,
-                borderRadius: 7,
-              marginBottom:10,
-               marginLeft: 7,
-               marginRight: 7
-              }}
-            />
-          }
-          activeDot={
-            <View
-              style={{
-                backgroundColor: '#fff',
-                width: 13,
-                height: 13,
-                borderRadius: 7,
-                marginBottom:10,
-               marginLeft: 7,
-               marginRight: 7
-              }}
-            />
-          }
-          paginationStyle={{
-            bottom: 70
-          }}
-          loop={false}>
+<Swiper  dot={<View style={styles.dot}/> } activeDot={<View style={styles.activeDot}/>}
+          paginationStyle={{bottom: 70 }}loop={false}>
   <View style={{justifyContent:"center", flexWrap:"wrap",flexDirection:"row"}}>
-  {
+  {  
+      showSlots?
        slots.filter((slot,Index) => 
        Index<8).map((slot,index)=>(
            
@@ -179,11 +187,13 @@ function ParkingSlots({navigation}) {
                </TouchableOpacity>
               
                
-       ))
+       )):
+       <View/>
    }
    </View>
    <View style={{justifyContent:"center",  flexWrap:"wrap",flexDirection:"row"}}>
   {
+     showSlots?
        slots.filter((slot,Index) => 
          Index>=8).map((slot,index)=>(
            
@@ -202,15 +212,16 @@ function ParkingSlots({navigation}) {
                   </ImageBackground>
                </TouchableOpacity>
               
-       ))
+       )):<View/>
    }
    </View>
    </Swiper>
    
    </View>
+   
    <SlotAction status={enable} setStatus={setEnable} enableInfo={enableInfo} setEnableInfo={setEnableInfo} slotStatus={slotStatus}  parking={Parking} slotIndex={Index} AllSlots={slots} setslots={setSlots}  />
   
-   
+
     </View>
     
   );
@@ -255,6 +266,28 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     borderColor: 'rgba(0, 0, 0, 0.1)',
     
-  }
+  },dot:{
+    backgroundColor: 'rgba(255,255,255,.3)',
+    width: 13,
+    height: 13,
+    borderRadius: 7,
+  marginBottom:10,
+   marginLeft: 7,
+   marginRight: 7
+  },activeDot:{
+    backgroundColor: '#fff',
+    width: 13,
+    height: 13,
+    borderRadius: 7,
+    marginBottom:10,
+   marginLeft: 7,
+   marginRight: 7
+  },refreshBTn:
+    {backgroundColor:"#0d1b2a",
+    position:"absolute",top:25,
+    right:10,width:"10%",height:"10%",
+    alignItems:"center",justifyContent:"center",
+    borderRadius:20}
+  
 });
 export { ParkingSlots,ShowContentModal}

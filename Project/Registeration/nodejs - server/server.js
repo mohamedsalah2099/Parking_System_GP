@@ -142,6 +142,49 @@ app.post ('/getSensor', async (req, res) => {
   }
 });
 
+
+
+// Post Sensor Data //
+app.post ('/postSensor', async (req, res) => {
+  res.header ('Access-Control-Allow-Origin', '*');
+  res.header (
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  );
+  try {
+    await fetch ('https://beta.masterofthings.com/PostSensorData', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true,
+      },
+      body: JSON.stringify ({
+        Package: {
+          SensorInfo: {
+            SensorId: 236,
+          },
+          SensorData: {
+            appVersion: 1,
+            phoneVersion: 2,
+            captureTime: 1,
+            currentNearnessLevel: req.body.slotStatus,
+          },
+        },
+        Auth: {
+          DriverManagerId: "iTi_2021_Parking",
+          DriverManagerPassword: "iTi_2021_Parkingpass",
+        },
+      }),
+    })
+    console.log("Sensor Data Sent");
+    res.json("Sensor Data Sent")
+  } catch (e) {
+    console.log (e);
+  }
+});
+
+
 app.listen (port, () => {
   console.log (`Listening at http://localhost:${port}`);
 });

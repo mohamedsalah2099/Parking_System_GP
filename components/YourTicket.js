@@ -4,6 +4,25 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import CountDown from 'react-native-countdown-component';
 import QRCode from 'react-native-qrcode-generator';
 import { LinearGradient } from 'expo-linear-gradient';
+
+async function  _onPressPostSensor (sensor,value) {
+  try {
+    const sens=218
+    await fetch ('https://arrogant-sorry-14928.herokuapp.com/postSensor', {
+      method: 'post',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        sensorStatus:value,
+        sensorID : sensor
+      })
+    })
+      .then (res => res.json ())
+      .then (json => console.log (JSON.stringify (json)));
+  } catch (e) {
+    console.log (e);
+  }
+}
+
 function Countdown(status) {
   console.log(status.userReservedtime)
   
@@ -13,7 +32,19 @@ return(
   
   size={30}
   until={status.userReservedtime}
-  onChange={console.log("chaged")}
+  onFinish={()=>{
+    if(status.actionAfterFinish){
+     
+    for (let i = 0; i < status.Slots.length; i++) {
+
+      if (i == status.emptySlotIndex && status.Slots[i].status==2) {
+        console.log("finish")
+        status.Slots[i].status = 0
+        status.setSlots(status.Slots)
+        _onPressPostSensor(status.Slots[i].sensor,"5")
+      }
+    }
+  }}}
   digitStyle={{backgroundColor: '#FFF', borderWidth: 2, borderColor: '#1CC625'}}
   digitTxtStyle={{color: '#1CC625'}}
   timeLabelStyle={{color: 'red', fontWeight: 'bold'}}
@@ -32,16 +63,19 @@ export default function YourTicket({ route }) {
     const [slotInd,setSlotInd] = useState(0)
     const [parkingN,setParkN] = useState("")
     const [qrString,setQrString] = useState("")
+    const [reserveFromUser,setReserveFromUser] = useState(false)
     var Seconds;
     useEffect(()=>{
        route.params?console.log("yes"):console.log("no")
        if(route.params){
+         setReserveFromUser(true)
         setDate(route.params.TicketDate);
         setSlotInd(route.params.slotIndex)
         setSeconds(route.params.countDown)
         setParkN(route.params.parkingName)
         setQrString(date+parkingN+slotInd);
        }else{
+        setReserveFromUser(false)
         setDate(0);
         setSlotInd(2)
          setSeconds(0)
@@ -49,17 +83,7 @@ export default function YourTicket({ route }) {
         setQrString(date+parkingN+slotInd);
        }
     })
-   /* useEffect(() => {
-      console.log(route.params.TicketDate)
-     
-       setQrString(route.params.TicketDate+route.params.parkingName+ route.params.slotIndex);
-        lockOrientation()
-      
-    } )
-   
-    const lockOrientation = async () => {
-        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT)
-      }*/
+ 
     return (
       <View style={styles.container}>
       <LinearGradient style={styles.background} colors={['#0f4c5c', 'transparent']} />
@@ -67,7 +91,8 @@ export default function YourTicket({ route }) {
         <View>
              <View style={{marginVertical:50}}>
         
-             <Countdown userReservedtime={route.params?route.params.countDown:seconds} />
+             <Countdown userReservedtime={route.params?route.params.countDown:seconds} Slots={route.params.Slots} emptySlotIndex={route.params.slotIndex} 
+             setSlots={route.params.setSlots} actionAfterFinish={reserveFromUser}/>
              </View>
              <View style={{justifyContent:"center",alignItems:"center"}}>
                <QRCode

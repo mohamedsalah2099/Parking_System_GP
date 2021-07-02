@@ -28,10 +28,7 @@ function CustomDrawerContent(props) {
   );
 }
 function Root({navigation}) {
-const [TicDate,setTicDate]= useState(0);
-const [countDwn,setCountDwn] = useState(0);
-const [slotIndx,setSlotIndx] =useState(0);
-const [ParkName,setParkName] = useState("")
+
 return (
   
     

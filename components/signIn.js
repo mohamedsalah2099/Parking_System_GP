@@ -34,7 +34,7 @@ const SignIn = ({navigation}) => {
                 email:email,
                 password:password
           };
-          await fetch('https://spotty-chipmunk-82.loca.lt/login',{
+          await fetch('https://arrogant-sorry-14928.herokuapp.com/login',{
             method:'post',
             headers: { "Content-Type": "application/json" },
             body:JSON.stringify(data)

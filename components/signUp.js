@@ -17,26 +17,27 @@ const SignUp = ({navigation}) => {
     const [passError,setPassERR]=useState("")
     const [enableModal,setEnableModal] = useState(false)
     async function  _onPressButton()  {  
+      var count = 0;
         if(email=="")
         setEmailERR("*Email field can't be empty");
         else if(!validateEmail(email)){
             setEmailERR("*Your email isn't valid");
         }
-        else { setEmailERR("")}
+        else { count++; setEmailERR("")}
         if(name=="")
         setNameERR("*Username field can't be empty");
         else if(name.length<3){
             setNameERR("*Your name must be more than 2 characters");
         }
-        else { setNameERR("")}
+        else {  count++; setNameERR("")}
         if(password=="")
         setPassERR("*Password field can't be empty");
         else if(password.length<=3){
             setPassERR("*Your password must be more than 3 characters");
         }
-        else { setPassERR("")}
-       if(emailError==""&&nameError==""&&passError==""){
-       
+        else { count++; setPassERR("")}
+       if(count==3){
+       console.log("yes")
         try{
             let data = {
                 name:name,

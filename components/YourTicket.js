@@ -4,7 +4,7 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import CountDown from 'react-native-countdown-component';
 import QRCode from 'react-native-qrcode-generator';
 import { LinearGradient } from 'expo-linear-gradient';
-
+ 
 async function  _onPressPostSensor (sensor,value) {
   try {
     const sens=218
@@ -65,8 +65,10 @@ export default function YourTicket({ route }) {
     const [parkingN,setParkN] = useState("")
     const [qrString,setQrString] = useState("")
     const [reserveFromUser,setReserveFromUser] = useState(false)
+    const [enableOrient,setEnableOrient] = useState(false)
     var Seconds;
     useEffect(()=>{
+      console.log(route.params)
        route.params?console.log("yes"):console.log("no")
        if(route.params){
          setReserveFromUser(true)
@@ -82,11 +84,13 @@ export default function YourTicket({ route }) {
          setSeconds(0)
         setParkN("gddd")
         setQrString(date+parkingN+slotInd);
-       }
+       }   
+        
     })
- 
+     
     return (
       <View style={styles.container}>
+        
       <LinearGradient style={styles.background} colors={['#0f4c5c', 'transparent']} />
        {   seconds?
         <View>

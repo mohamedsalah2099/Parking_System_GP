@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Marker ,Callout } from 'react-native-maps';
 import Constants from 'expo-constants';
@@ -7,7 +7,7 @@ import { getPreciseDistance} from 'geolib';
 import Modal from 'react-native-modal';
 import OpenMap from "react-native-open-map";
 import { useNavigation } from '@react-navigation/native';
- 
+import * as ScreenOrientation from 'expo-screen-orientation';
  
 const ShowModal = (status)=>{
     console.log(status.message)
@@ -22,14 +22,17 @@ const ShowModal = (status)=>{
   >
     <View style={styles.modalContent}>
     <Text style={{fontSize:20,color:"#0d1b2a",fontWeight:"bold"}}>{status.message}</Text>
-    <Image source={require('../assets/animatedParking.gif')} resizeMode='contain' style={{width:"100%"}} />
+    <Image source={require('../assets/animatedParking.gif')} resizeMode='contain'  style={{width:"100%"}} />
     <View style={{flexDirection:"row"}}>
     <TouchableOpacity style={styles.button} onPress={()=>{status.setStatus(false); openExternalMap(status.parking)}}>
   <Text style={{fontSize:16,fontWeight:"bold"}}>Direction</Text>
 </TouchableOpacity>
+{
+  status.IndexNum==0?
 <TouchableOpacity style={styles.button} onPress={()=>{status.setStatus(false);navigation.navigate('ParkingSlots')}}>
   <Text style={{fontSize:16,fontWeight:"bold"}}>Open parking</Text>
-</TouchableOpacity>
+</TouchableOpacity>:<Text></Text>
+}
 <TouchableOpacity style={styles.button} onPress={()=>status.setStatus(false)}>
   <Text style={{fontSize:16,fontWeight:"bold"}}>Cancel</Text>
 </TouchableOpacity>
@@ -47,15 +50,47 @@ const openExternalMap = (parking)=>{
         actionSheetMessage: 'Available applications '
       });
 }
-const ParkingMap = () => {
+const ParkingMap = ({ route }) => {
      
-    const parkingAreas = [{coordinate: {latitude: 30.064674220822372, longitude:  31.29295170263593} , title:"ramsis parking" ,slots:5,ticketCost:"7 LE"},
-    {coordinate:{latitude: 30.06165790645091, longitude: 31.35745664947928 },title: "abasia parking",slots:7,ticketCost:"5 LE"},
-    { coordinate:{latitude: 30.074107720548067, longitude: 31.25213921043556},title: "tahrir Parking",slots:3,ticketCost:"10 LE"},]
-    const [lat, setLat] = useState(30.102252)
-    const [long, setLong] = useState(31.25444)
-    const [index,setIndex]= useState(0)
-    const [enableModal,setEnableModal]=useState(false)
+  const [lat, setLat] = useState(30.102252)
+  const [long, setLong] = useState(31.25444)
+  const [index,setIndex]= useState(0)
+  const [parkingName,setParkingName]=useState("")
+  const [parkingAvaSlots,setParkingAvaSlots] = useState(0)
+  const [parkingCost,setParkingCost] = useState(0)
+  const [Parkinglat, setParkingLat] = useState(0)
+  const [Parkinglong, setParkingLong] = useState(0)
+  const [enableModal,setEnableModal]=useState(false)
+ 
+  useEffect(()=>{
+    
+    getDataAboutParking()
+    
+  })
+  
+ 
+  const parkingAreas = [{coordinate: {latitude: Parkinglat, longitude:  Parkinglong} , title:parkingName ,slots:parkingAvaSlots,ticketCost:parkingCost},
+  {coordinate:{latitude: 30.06165790645091, longitude: 31.35745664947928 },title: "abasia parking",slots:7,ticketCost:"5 LE"},
+  { coordinate:{latitude: 30.074107720548067, longitude: 31.25213921043556},title: "tahrir Parking",slots:3,ticketCost:"10 LE"},]
+    async function getDataAboutParking () {
+      try {
+        await fetch ('https://arrogant-sorry-14928.herokuapp.com/getParking', {
+          method: 'post',
+          headers: {'Content-Type': 'application/json'},
+        })
+          .then (res => res.json ())
+          .then (data => {
+            setParkingLat(parseInt(data.Lat));
+            setParkingLong(parseInt(data.Lng));
+            setParkingCost(data.TicketCost);
+            setParkingAvaSlots(data.AvailableSlots);
+            console.log (data.NoneAvailable);
+            setParkingName(data.Name);
+          });
+      } catch (e) {
+        console.log (e);
+      }
+    }
     const getNearestParking=({navigation})=>{
         let distances =[];
         parkingAreas.map(marker=>{
@@ -94,8 +129,8 @@ const ParkingMap = () => {
       setLong(location.coords.longitude);
     };
 return(
-    <View style={styles.container} >
- 
+    <View style={styles.container}  >
+   
 <MapView style={[styles.map, { flex: 1 }]}
                 provider={MapView.PROVIDER_GOOGLE}
                 region={{
@@ -145,7 +180,7 @@ return(
                 <Text style={{color:"#fff",fontSize:16}}>get Nearest Parking</Text>
             </TouchableOpacity>
        
-            <ShowModal status={enableModal} setStatus={setEnableModal} message={ parkingAreas[index].title} parking={parkingAreas[index]}/>
+            <ShowModal status={enableModal} setStatus={setEnableModal} message={ parkingAreas[index].title} parking={parkingAreas[index]} IndexNum={index}/>
         </View>
 );
 }
@@ -189,6 +224,7 @@ const styles = StyleSheet.create({
         
       },
       modalContent: {
+       
         backgroundColor: 'white',
         padding: 22,
         justifyContent: 'center',

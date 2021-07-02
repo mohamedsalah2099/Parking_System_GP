@@ -10,7 +10,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator,DrawerContentScrollView,
     DrawerItemList, DrawerItem, } from '@react-navigation/drawer';
 import { useNavigation } from '@react-navigation/native';
- 
+import * as ScreenOrientation from 'expo-screen-orientation';
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 //const Drawer = createDrawerNavigator();
@@ -28,7 +28,7 @@ function CustomDrawerContent(props) {
   );
 }
 function Root({navigation}) {
-
+ 
 return (
   
     
@@ -53,8 +53,8 @@ return (
   return (
     
     <NavigationContainer>
-    <Stack.Navigator initialRouteName='Root' headerMode="false">
-      <Stack.Screen name="SignIn" component={SignIn}/>
+    <Stack.Navigator initialRouteName='SignIn' headerMode="false">
+      <Stack.Screen name="SignIn" component={SignIn} />
       <Stack.Screen name="SignUp" component={SignUp}/>
       <Stack.Screen name="Root" component={Root}  />
        

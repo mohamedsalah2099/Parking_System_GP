@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useLayoutEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image, ImageBackground, Button } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Modal from 'react-native-modal';
@@ -6,7 +6,23 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import { useNavigation } from '@react-navigation/native';
 import { LogBox } from 'react-native';
 import Swiper from 'react-native-swiper';
-
+async function  _onPressPostSensor (sensor,value) {
+  try {
+    const sens=218
+    await fetch ('https://arrogant-sorry-14928.herokuapp.com/postSensor', {
+      method: 'post',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        sensorStatus:value,
+        sensorID : sensor
+      })
+    })
+      .then (res => res.json ())
+      .then (json => console.log (JSON.stringify (json)));
+  } catch (e) {
+    console.log (e);
+  }
+}
 
 const ShowContentModal = (status) => {
   const navigation = useNavigation()
@@ -18,7 +34,7 @@ const ShowContentModal = (status) => {
       for (let i = 0; i < status.allSlots.length; i++) {
         if (i == status.emptySlotIndex) {
           status.allSlots[i].status = 2;
-          
+          _onPressPostSensor(status.allSlots[i].sensor,"2.5")
         }
       }
       status.setReserveB(true)
@@ -36,7 +52,7 @@ const ShowContentModal = (status) => {
     status.setEnableInfo(false);
     var endDate = new Date();
     // Do your operations
-    var Seconds = Math.round(((bookedDate - endDate.getTime()) / 1000) + 15);
+    var Seconds = Math.round(((bookedDate - endDate.getTime()) / 1000) + 15*60);
     console.log(navigation);
     navigation.navigate({
       name: "YourTicket",
@@ -102,7 +118,8 @@ const SlotAction = (status) => {
              
               :status.reserveB?
               <ShowContentModal message="Sorry,you can't reserve on slot at atime" status={status.slotStatus} reserveB = {status.reserveB} setReserveB={status.setReserveB} setEnable={status.setStatus} allSlots={status.AllSlots}/>
-              :  <ShowContentModal message={"The slot will cost " + status.parking.cost + " /hour  Are you sure to continue?"} status={status.slotStatus} setEnable={status.setStatus}
+              :  
+              <ShowContentModal message={"The slot will cost " + status.cost + " /hour  Are you sure to continue?"} status={status.slotStatus} setEnable={status.setStatus}
                   emptySlotIndex={status.slotIndex} allSlots={status.AllSlots} setUpdatedSlots={status.setslots} setEnableInfo={status.setEnableInfo} enableInfo={status.enableInfo}
                   parkingTitle={status.parking.title}  reserveB = {status.reserveB} setReserveB={status.setReserveB}/>
 
@@ -115,10 +132,10 @@ const SlotAction = (status) => {
 }
 
 
-
-function ParkingSlots({ navigation }) {
+function ParkingSlots({ route }) {
+ 
   const Parking = {
-    title: "Tahrir Parking", cost: 7, availableSlot: 5, totalSlots: 10, slots: [{ status: 0, sensor: 218 }, { status: 0, sensor: 219 },
+    title: parkingName, cost: parkingCost, availableSlot: parkingAvaeSlots, totalSlots: 16, slots: [{ status: 0, sensor: 218 }, { status: 0, sensor: 219 },
     { status: 0, sensor: 220 }, { status: 0, sensor: 221 }, { status: 0, sensor: 222 }, { status: 0, sensor: 223 }, { status: 1, sensor: 224 }, { status: 0, sensor: 225 },
     { status: 0, sensor: 226 }, { status: 0, sensor: 227 }, { status: 0, sensor: 228 }, { status: 0, sensor: 229 }, { status: 0, sensor: 230 }, { status: 0, sensor: 231 }, { status: 0, sensor: 232 }, { status: 0, sensor: 233 }]
   }
@@ -129,7 +146,28 @@ function ParkingSlots({ navigation }) {
   const [enableInfo, setEnableInfo] = useState(false);
   const [showSlots, setShowSlots] = useState(false)
   const [reserveBefore,setReserveBefore] = useState(false)
-
+  const [parkingAvaeSlots,setParkingAvaSlots]=useState(0)
+  const [parkingCost,setParkingCost] = useState(0)
+  const [parkingName,setParkingName]=useState("")
+ const [enableOrient,setEnableOrient]= useState(false)
+  async function getDataAboutParking () {
+    try {
+      await fetch ('https://arrogant-sorry-14928.herokuapp.com/getParking', {
+        method: 'post',
+        headers: {'Content-Type': 'application/json'},
+      })
+        .then (res => res.json ())
+        .then (data => {
+          setParkingAvaSlots(data.AvailableSlots);
+          setParkingCost(data.TicketCost);
+          setParkingName(data.Name);
+         
+        });
+    } catch (e) {
+      console.log (e);
+    }
+  }
+  
   async function getSlotsData(slot, index) {
 
     try {
@@ -144,13 +182,14 @@ function ParkingSlots({ navigation }) {
         .then(res => res.json())
         .then(json => {
           console.log(JSON.stringify(json))
-          if (Math.round(JSON.stringify(json)) == 5 && slot.status != 2 ) {
+          if (Math.round(JSON.stringify(json)) == 5 /*&& slot.status != 2 */) {
             slot.status = 0
           } else  if (Math.round(JSON.stringify(json)) == 0) {
             slot.status = 1
+          }else  if (JSON.stringify(json) == 2.5) {
+            slot.status = 2 
           } if (index == 15) {
             setShowSlots(true)
-       
           }
         }
         );
@@ -163,23 +202,29 @@ function ParkingSlots({ navigation }) {
 
 
   useEffect(() => {
-    lockOrientation()
+    
     Parking.slots.map((slot, index) =>
       getSlotsData(slot, index))
-    console.log("yes")
+    console.log(route)
+    getDataAboutParking()
+     // Event Listener for orientation changes
+    
+lockOrientation();
     //setSlots(Parking.slots)
   })
-
   const lockOrientation = async () => {
-    await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE)
-  }
 
+    await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT )
+  }
+ 
+ 
   return (
 
-    <View style={styles.container}>
+    <View style={styles.container} >
+    
       <LinearGradient style={styles.background} colors={['#0f4c5c', 'transparent']} />
-      <Text style={[styles.headerStyle, { top: 20, left: 10, }]}>Tahrir Parking</Text>
-      <Text style={[styles.headerStyle, { top: 20, left: 300, }]}>Available slots: 5</Text>
+      <Text style={[styles.headerStyle, { top: 20, left: 10, }]}>{parkingName}</Text>
+      <Text style={[styles.headerStyle, { top: 20, left: 300, }]}>Available slots: {parkingAvaeSlots}</Text>
       <TouchableOpacity style={styles.refreshBTn} onPress={() => {
         setShowSlots(false); slots.map((slot, index) =>
           getSlotsData(slot, index))
@@ -245,7 +290,7 @@ function ParkingSlots({ navigation }) {
 
       </View>
 
-      <SlotAction status={enable} setStatus={setEnable} enableInfo={enableInfo} setEnableInfo={setEnableInfo} slotStatus={slotStatus} parking={Parking} 
+      <SlotAction status={enable} setStatus={setEnable} enableInfo={enableInfo} setEnableInfo={setEnableInfo} slotStatus={slotStatus} parking={Parking}  cost={parkingCost}
       slotIndex={Index} AllSlots={slots} setslots={setSlots} reserveB = {reserveBefore} setReserveB={setReserveBefore}/>
 
 

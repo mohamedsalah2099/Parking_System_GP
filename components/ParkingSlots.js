@@ -6,6 +6,27 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import { useNavigation } from '@react-navigation/native';
 import { LogBox } from 'react-native';
 import Swiper from 'react-native-swiper';
+async function  _onPressPostApplication (Name,email,TicketDate,SensorID,ParkingName,timeReserved) {
+  try {
+    const sens=218
+    await fetch ('https://arrogant-sorry-14928.herokuapp.com/postApp62Data', {
+      method: 'post',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        name:Name,
+        email : email,
+        TicketData:TicketDate,
+        slotIndex:SensorID,
+        parkingName:ParkingName,
+        timeReserved:timeReserved
+      })
+    })
+      .then (res => res.json ())
+      .then (json => console.log (JSON.stringify (json)));
+  } catch (e) {
+    console.log (e);
+  }
+}
 async function  _onPressPostSensor (sensor,value) {
   try {
     const sens=218
@@ -28,6 +49,7 @@ const ShowContentModal = (status) => {
   const navigation = useNavigation()
   const [bookedDate, setBookedDate] = useState(0);
   const onPressSlot = () => {
+    var sensor ;
     console.log(status.allSlots.length)
     if (status.status == 0 && status.reserveB==false) {
       console.log(status.emptySlotIndex)
@@ -35,6 +57,8 @@ const ShowContentModal = (status) => {
         if (i == status.emptySlotIndex) {
           status.allSlots[i].status = 2;
           _onPressPostSensor(status.allSlots[i].sensor,"2.5")
+          sensor = status.allSlots[i].sensor
+
         }
       }
       status.setReserveB(true)
@@ -42,8 +66,8 @@ const ShowContentModal = (status) => {
       status.setEnableInfo(true)
       status.setEnable(true)
       var CurrentDate = new Date(); //Current Hours
-
       setBookedDate(CurrentDate);
+     _onPressPostApplication(status.Uname,status.Umail,CurrentDate,sensor,status.parkingTitle,CurrentDate)
     }
 
   }
@@ -52,8 +76,7 @@ const ShowContentModal = (status) => {
     status.setEnableInfo(false);
     var endDate = new Date();
     // Do your operations
-    var Seconds = Math.round(((bookedDate - endDate.getTime()) / 1000) + 15*60);
-    console.log(navigation);
+    var Seconds = Math.round(((bookedDate - endDate.getTime()) / 1000) + 60*15);
     navigation.navigate({
       name: "YourTicket",
       params: { TicketDate: bookedDate, countDown: Seconds, slotIndex: status.emptySlotIndex, parkingName: status.parkingTitle ,Slots:status.allSlots,setSlots:status.setUpdatedSlots
@@ -113,7 +136,7 @@ const SlotAction = (status) => {
               />
               :
               status.slotStatus == 0 && status.enableInfo == true ?
-              <ShowContentModal message={"Congratulations!! you reserved slot number " + status.slotIndex + " the ticket will expire after 1 hour."} status={status.slotStatus} setEnable={status.setStatus}
+              <ShowContentModal message={"Congratulations!! you reserved slot number " + status.slotIndex + " the ticket will expire after 15 min."} status={status.slotStatus} setEnable={status.setStatus}
               setUpdatedSlots={status.setslots} emptySlotIndex={status.slotIndex} allSlots={status.AllSlots}  reserveB = {status.reserveB} setReserveB={status.setReserveB} setEnableInfo={status.setEnableInfo} enableInfo={status.enableInfo} />
              
               :status.reserveB?
@@ -121,7 +144,7 @@ const SlotAction = (status) => {
               :  
               <ShowContentModal message={"The slot will cost " + status.cost + " /hour  Are you sure to continue?"} status={status.slotStatus} setEnable={status.setStatus}
                   emptySlotIndex={status.slotIndex} allSlots={status.AllSlots} setUpdatedSlots={status.setslots} setEnableInfo={status.setEnableInfo} enableInfo={status.enableInfo}
-                  parkingTitle={status.parking.title}  reserveB = {status.reserveB} setReserveB={status.setReserveB}/>
+                  parkingTitle={status.parkingName}  reserveB = {status.reserveB} setReserveB={status.setReserveB}  Uname={status.Uname} Umail={status.Umail}/>
 
         }
 
@@ -149,7 +172,8 @@ function ParkingSlots({ route }) {
   const [parkingAvaeSlots,setParkingAvaSlots]=useState(0)
   const [parkingCost,setParkingCost] = useState(0)
   const [parkingName,setParkingName]=useState("")
- const [enableOrient,setEnableOrient]= useState(false)
+  const [userName,setUserName]= useState("")
+  const [userMail,setUserMail] = useState("")
   async function getDataAboutParking () {
     try {
       await fetch ('https://arrogant-sorry-14928.herokuapp.com/getParking', {
@@ -181,7 +205,7 @@ function ParkingSlots({ route }) {
       })
         .then(res => res.json())
         .then(json => {
-          console.log(JSON.stringify(json))
+         // console.log(JSON.stringify(json))
           if (Math.round(JSON.stringify(json)) == 5 /*&& slot.status != 2 */) {
             slot.status = 0
           } else  if (Math.round(JSON.stringify(json)) == 0) {
@@ -200,12 +224,15 @@ function ParkingSlots({ route }) {
 
   }
 
-
+useEffect(()=>{
+  setUserMail(route.params.email)
+  setUserName(route.params.name)
+},[])
   useEffect(() => {
-    
+    console.log(userMail+" "+userName)
     Parking.slots.map((slot, index) =>
       getSlotsData(slot, index))
-    console.log(route)
+  
     getDataAboutParking()
      // Event Listener for orientation changes
     
@@ -214,7 +241,7 @@ lockOrientation();
   })
   const lockOrientation = async () => {
 
-    await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT )
+    await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE )
   }
  
  
@@ -228,7 +255,7 @@ lockOrientation();
       <TouchableOpacity style={styles.refreshBTn} onPress={() => {
         setShowSlots(false); slots.map((slot, index) =>
           getSlotsData(slot, index))
-        console.log("yes");
+        //console.log("yes");
       }}><Text style={{ color: "white" }}>Refresh</Text></TouchableOpacity>
 
 
@@ -290,8 +317,8 @@ lockOrientation();
 
       </View>
 
-      <SlotAction status={enable} setStatus={setEnable} enableInfo={enableInfo} setEnableInfo={setEnableInfo} slotStatus={slotStatus} parking={Parking}  cost={parkingCost}
-      slotIndex={Index} AllSlots={slots} setslots={setSlots} reserveB = {reserveBefore} setReserveB={setReserveBefore}/>
+      <SlotAction status={enable} setStatus={setEnable} enableInfo={enableInfo} setEnableInfo={setEnableInfo} slotStatus={slotStatus} parking={Parking} parkingName={parkingName} cost={parkingCost}
+      slotIndex={Index} AllSlots={slots} setslots={setSlots} reserveB = {reserveBefore} setReserveB={setReserveBefore} Uname={userName} Umail={userMail}/>
 
 
     </View>

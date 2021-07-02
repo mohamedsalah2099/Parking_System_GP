@@ -27,8 +27,10 @@ function CustomDrawerContent(props) {
     </DrawerContentScrollView>
   );
 }
-function Root({navigation}) {
- 
+function Root({route}) {
+  useEffect(()=>{
+  console.log(route.params)
+  })
 return (
   
     
@@ -37,7 +39,7 @@ return (
     itemStyle: { marginVertical: 5 },
   }}>
   <Drawer.Screen name="ParkingMap" component={ParkingMap}  />
-  <Drawer.Screen name="ParkingSlots" component={ParkingSlots} />
+  <Drawer.Screen name="ParkingSlots" component={ParkingSlots} initialParams={{name:route.params.name,email:route.params.email}}/>
   <Drawer.Screen name="YourTicket" component={YourTicket}  />
   
 </Drawer.Navigator>
@@ -49,7 +51,7 @@ return (
 
 
   export default function App({navigation}) {
-    
+   
   return (
     
     <NavigationContainer>

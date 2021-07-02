@@ -41,6 +41,7 @@ return(
         console.log("finish")
         status.Slots[i].status = 0
         status.setSlots(status.Slots)
+        status.setReserveBefore(false)
         _onPressPostSensor(status.Slots[i].sensor,"5")
       }
     }
@@ -92,7 +93,7 @@ export default function YourTicket({ route }) {
              <View style={{marginVertical:50}}>
         
              <Countdown userReservedtime={route.params?route.params.countDown:seconds} Slots={route.params.Slots} emptySlotIndex={route.params.slotIndex} 
-             setSlots={route.params.setSlots} actionAfterFinish={reserveFromUser}/>
+             setSlots={route.params.setSlots} actionAfterFinish={reserveFromUser} setReserveBefore={route.params.setReserveB}/>
              </View>
              <View style={{justifyContent:"center",alignItems:"center"}}>
                <QRCode

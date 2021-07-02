@@ -13,13 +13,15 @@ const ShowContentModal = (status) => {
   const [bookedDate, setBookedDate] = useState(0);
   const onPressSlot = () => {
     console.log(status.allSlots.length)
-    if (status.status == 0) {
+    if (status.status == 0 && status.reserveB==false) {
       console.log(status.emptySlotIndex)
       for (let i = 0; i < status.allSlots.length; i++) {
         if (i == status.emptySlotIndex) {
           status.allSlots[i].status = 2;
+          
         }
       }
+      status.setReserveB(true)
       status.setUpdatedSlots(status.allSlots)
       status.setEnableInfo(true)
       status.setEnable(true)
@@ -38,7 +40,8 @@ const ShowContentModal = (status) => {
     console.log(navigation);
     navigation.navigate({
       name: "YourTicket",
-      params: { TicketDate: bookedDate, countDown: Seconds, slotIndex: status.emptySlotIndex, parkingName: status.parkingTitle ,Slots:status.allSlots,setSlots:status.setUpdatedSlots},
+      params: { TicketDate: bookedDate, countDown: Seconds, slotIndex: status.emptySlotIndex, parkingName: status.parkingTitle ,Slots:status.allSlots,setSlots:status.setUpdatedSlots
+   ,setReserveB:status.setReserveB},
 
     }); LogBox.ignoreLogs([
       'Non-serializable values were found in the navigation state',
@@ -61,7 +64,7 @@ const ShowContentModal = (status) => {
         </TouchableOpacity>
       }
       {
-        status.status == 0 || status.enableInfo == false ?
+        status.status == 0 && status.enableInfo == false ?
           <TouchableOpacity style={[styles.button]} onPress={() => { status.setEnable(false); status.setEnableInfo(false); }}>
             <Text style={{ fontSize: 16, fontWeight: "bold" }}>Cancel</Text>
           </TouchableOpacity> :
@@ -94,12 +97,14 @@ const SlotAction = (status) => {
               />
               :
               status.slotStatus == 0 && status.enableInfo == true ?
-                <ShowContentModal message={"Congratulations!! you reserved slot number " + status.slotIndex + " the ticket will expire after 1 hour."} status={status.slotStatus} setEnable={status.setStatus}
-                setUpdatedSlots={status.setslots} emptySlotIndex={status.slotIndex} allSlots={status.AllSlots} setEnableInfo={status.setEnableInfo} enableInfo={status.enableInfo} />
-                :
-                <ShowContentModal message={"The slot will cost " + status.parking.cost + " /hour  Are you sure to continue?"} status={status.slotStatus} setEnable={status.setStatus}
+              <ShowContentModal message={"Congratulations!! you reserved slot number " + status.slotIndex + " the ticket will expire after 1 hour."} status={status.slotStatus} setEnable={status.setStatus}
+              setUpdatedSlots={status.setslots} emptySlotIndex={status.slotIndex} allSlots={status.AllSlots}  reserveB = {status.reserveB} setReserveB={status.setReserveB} setEnableInfo={status.setEnableInfo} enableInfo={status.enableInfo} />
+             
+              :status.reserveB?
+              <ShowContentModal message="Sorry,you can't reserve on slot at atime" status={status.slotStatus} reserveB = {status.reserveB} setReserveB={status.setReserveB} setEnable={status.setStatus} allSlots={status.AllSlots}/>
+              :  <ShowContentModal message={"The slot will cost " + status.parking.cost + " /hour  Are you sure to continue?"} status={status.slotStatus} setEnable={status.setStatus}
                   emptySlotIndex={status.slotIndex} allSlots={status.AllSlots} setUpdatedSlots={status.setslots} setEnableInfo={status.setEnableInfo} enableInfo={status.enableInfo}
-                  parkingTitle={status.parking.title} />
+                  parkingTitle={status.parking.title}  reserveB = {status.reserveB} setReserveB={status.setReserveB}/>
 
         }
 
@@ -123,7 +128,7 @@ function ParkingSlots({ navigation }) {
   const [Index, setIndex] = useState(0)
   const [enableInfo, setEnableInfo] = useState(false);
   const [showSlots, setShowSlots] = useState(false)
-
+  const [reserveBefore,setReserveBefore] = useState(false)
 
   async function getSlotsData(slot, index) {
 
@@ -240,7 +245,8 @@ function ParkingSlots({ navigation }) {
 
       </View>
 
-      <SlotAction status={enable} setStatus={setEnable} enableInfo={enableInfo} setEnableInfo={setEnableInfo} slotStatus={slotStatus} parking={Parking} slotIndex={Index} AllSlots={slots} setslots={setSlots} />
+      <SlotAction status={enable} setStatus={setEnable} enableInfo={enableInfo} setEnableInfo={setEnableInfo} slotStatus={slotStatus} parking={Parking} 
+      slotIndex={Index} AllSlots={slots} setslots={setSlots} reserveB = {reserveBefore} setReserveB={setReserveBefore}/>
 
 
     </View>

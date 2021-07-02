@@ -233,6 +233,99 @@ app.post ('/getParking', async (req, res) => {
 });
 
 
+// Post to App Form ///
+app.post ('/postApp62Data', async (req, res) => {
+  res.header ('Access-Control-Allow-Origin', '*');
+  res.header (
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  );
+  try {
+    await fetch ('https://beta.masterofthings.com/PostAppData', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+      body: JSON.stringify ({
+        AppInfo: {
+          AppId: '62',
+          SecretKey: '8H2chANYDfGqtjt71625100105646UserReserve',
+        },
+        AppData: [
+          {
+            name: req.body.name,
+            email: req.body.email,
+            TicketData: req.body.TicketData,
+            slotIndex: req.body.slotIndex,
+            parkingName: req.body.parkingName,
+            timeReserved: req.body.timeReserved
+          },
+        ],
+      }),
+    });
+    console.log (req.body);
+  } catch (e) {
+    console.log (e);
+  }
+  res.send ('Hello World!');
+});
+
+
+// Get data from app form 62 //
+app.post ('/getApp62Data', async (req, res) => {
+  res.header ('Access-Control-Allow-Origin', '*');
+  res.header (
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept',
+    
+  );
+  try {
+    await fetch ('https://beta.masterofthings.com/GetAppReadingValueList', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        "Access-Control-Allow-Origin" : "*", 
+"Access-Control-Allow-Credentials" : true 
+      },
+      body: JSON.stringify ({
+        AppId: 62,
+        Limit: 1,
+        OrderBy: [
+          {
+            reading: 'TimeStamp',
+            orderType: 'desc',
+          },
+        ],
+        ConditionList: [
+          {
+            Reading: 'email',
+            Condition: 'e',
+            Value: req.body.email,
+          },
+        ],
+        Auth: {
+          Key: '8H2chANYDfGqtjt71625100105646UserReserve',
+        },
+      }),
+    })
+      .then (res => res.json())
+      .then (value => {
+        if(value.Info.NumberOfReadings)
+        {
+          console.log (value.Info.NumberOfReadings)
+          res.json(JSON.stringify(value))
+        }
+        else{
+          console.log("Not Found");
+          res.json("Not Found")
+        }
+      });
+  } catch (e) {
+    console.log (e);
+  }
+});
+
+
 app.listen (port, () => {
   console.log (`Listening at http://localhost:${port}`);
 });

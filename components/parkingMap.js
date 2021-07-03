@@ -128,6 +128,10 @@ const ParkingMap = ({ route }) => {
       setLat(location.coords.latitude);
       setLong(location.coords.longitude);
     };
+    const lockOrientation = async () => {
+
+      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT )
+    }
 return(
     <View style={styles.container}  >
    
@@ -140,7 +144,7 @@ return(
                     longitudeDelta: 0.035,
                 }}
                
-                onPress={e => { setLat(e.nativeEvent.coordinate.latitude); setLong(e.nativeEvent.coordinate.longitude) }}
+                onPress={e => { setLat(e.nativeEvent.coordinate.latitude); setLong(e.nativeEvent.coordinate.longitude);lockOrientation()  }}
                 showsUserLocation={true}
                 //onPanDrag={e => console.log(e.nativeEvent)}
                 followsUserLocation={true}

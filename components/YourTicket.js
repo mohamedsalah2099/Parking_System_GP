@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View,TouchableOpacity } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import CountDown from 'react-native-countdown-component';
 import QRCode from 'react-native-qrcode-generator';
@@ -70,7 +70,7 @@ export default function YourTicket({ route }) {
     async function _getDataFromApplication(){
       try{
         let data = {
-            email:"feby.gergis97@eng-st.cu.edu.eg ",
+            email:route.params.email,
             
       };
       await fetch('https://arrogant-sorry-14928.herokuapp.com/getApp62Data',{
@@ -112,34 +112,48 @@ export default function YourTicket({ route }) {
       
     }
      }
+   
+  const lockOrientation = async () => {
+
+    await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT )
+  }
+ 
     useEffect(()=>{
       console.log(route.params)
        route.params?console.log("yes"):console.log("no")
-       if(route.params ){
-         setReserveFromUser(true)
-        setDate(route.params.TicketDate);
-        setSlotInd(route.params.slotIndex)
-        setSeconds(route.params.countDown)
-        setParkN(route.params.parkingName)
-        setQrString(date+parkingN+slotInd);
-       }else{
-         console.log("here")
-         setReserveFromUser(false)
-         _getDataFromApplication()
-     
-       }   
-      
-        
+       
+      refreshTicket()
     } ,[] )
+     const refreshTicket=()=>{
+      lockOrientation()
+      if(route.params && route.params.TicketDate ){
+        setReserveFromUser(true)
+       setDate(route.params.TicketDate);
+       setSlotInd(route.params.slotIndex)
+       setSeconds(route.params.countDown)
+       setParkN(route.params.parkingName)
+       setQrString(date+parkingN+slotInd);
+      }else{
+        console.log("here")
+        setReserveFromUser(false)
+        _getDataFromApplication()
+    
+      }   
      
+       
+     }
     return (
       <View style={styles.container}>
         
       <LinearGradient style={styles.background} colors={['#0f4c5c', 'transparent']} />
+      <TouchableOpacity style={styles.refreshBTn} onPress={() => {
+        refreshTicket()
+        //console.log("yes");
+      }}><Text style={{ color: "white" }}>Refresh</Text></TouchableOpacity>
        {   seconds?
         <View>
              <View style={{marginVertical:50}}>
-        {route.params?
+        {route.params && route.params.TicketDate?
              <Countdown userReservedtime={route.params?route.params.countDown:seconds} Slots={route.params.Slots} emptySlotIndex={route.params.slotIndex} 
              setSlots={route.params.setSlots} actionAfterFinish={reserveFromUser} setReserveBefore={route.params.setReserveB}/>
              :
@@ -176,4 +190,13 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
     height: 250,
-  }})
+  },refreshBTn:
+  {
+    backgroundColor: "#0d1b2a",
+    position: "absolute", top: 25,
+    right: 10, width: "14%", height: "8%",
+    alignItems: "center", justifyContent: "center",
+    borderRadius: 10
+  }
+
+})

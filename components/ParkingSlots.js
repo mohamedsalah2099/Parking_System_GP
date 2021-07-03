@@ -80,7 +80,7 @@ const ShowContentModal = (status) => {
     navigation.navigate({
       name: "YourTicket",
       params: { TicketDate: bookedDate, countDown: Seconds, slotIndex: status.emptySlotIndex, parkingName: status.parkingTitle ,Slots:status.allSlots,setSlots:status.setUpdatedSlots
-   ,setReserveB:status.setReserveB},
+   ,setReserveB:status.setReserveB,reserveB:status.reserveB},
 
     }); LogBox.ignoreLogs([
       'Non-serializable values were found in the navigation state',

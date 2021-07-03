@@ -4,7 +4,7 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import CountDown from 'react-native-countdown-component';
 import QRCode from 'react-native-qrcode-generator';
 import { LinearGradient } from 'expo-linear-gradient';
- 
+
 async function  _onPressPostSensor (sensor,value) {
   try {
     const sens=218
@@ -65,12 +65,57 @@ export default function YourTicket({ route }) {
     const [parkingN,setParkN] = useState("")
     const [qrString,setQrString] = useState("")
     const [reserveFromUser,setReserveFromUser] = useState(false)
-    const [enableOrient,setEnableOrient] = useState(false)
+    const [diffTime,setDiffTime]=useState(0) 
     var Seconds;
+    async function _getDataFromApplication(){
+      try{
+        let data = {
+            email:"feby.gergis97@eng-st.cu.edu.eg ",
+            
+      };
+      await fetch('https://arrogant-sorry-14928.herokuapp.com/getApp62Data',{
+        method:'post',
+        headers: { "Content-Type": "application/json" },
+        body:JSON.stringify(data)
+      }).then(res => res.json() )
+    .then(json => {
+        if(json=="Not Found"){
+         console.log("Not found")
+         setSeconds(0)
+        }else{
+         
+            console.log(json)
+            var CurrentDate = new Date(); 
+            console.log("hi",Date.parse(CurrentDate) - Date.parse(json.Result[0].TimeStamp)  )
+            console.log("bye",Date.parse(CurrentDate) - Date.parse(json.Result[0].TicketData)  )
+        console.log(CurrentDate)
+        console.log(json.Result[0].TicketData)
+         
+     setDiffTime(15*60*1000-( Date.parse(CurrentDate) - Date.parse(json.Result[0].TimeStamp)))
+     if(diffTime>0   ){
+       console.log("Not here")
+     // route.params.setReserveB(true)
+      setReserveFromUser(false)
+     setDate(json.Result[0].TicketData);
+     setSlotInd(json.Result[0].slotIndex)
+      setSeconds(diffTime/1000)
+     setParkN(json.Result[0].parkingName) 
+     setQrString(date+parkingN+slotInd);
+    }else{setSeconds(0)
+    console.log("Yesssssssss")}
+  
+        }
+    },[]);
+    }
+    catch(e){
+      console.log(e);
+      
+    }
+     }
     useEffect(()=>{
       console.log(route.params)
        route.params?console.log("yes"):console.log("no")
-       if(route.params){
+       if(route.params ){
          setReserveFromUser(true)
         setDate(route.params.TicketDate);
         setSlotInd(route.params.slotIndex)
@@ -78,15 +123,14 @@ export default function YourTicket({ route }) {
         setParkN(route.params.parkingName)
         setQrString(date+parkingN+slotInd);
        }else{
-        setReserveFromUser(false)
-        setDate(0);
-        setSlotInd(2)
-         setSeconds(0)
-        setParkN("gddd")
-        setQrString(date+parkingN+slotInd);
+         console.log("here")
+         setReserveFromUser(false)
+         _getDataFromApplication()
+     
        }   
+      
         
-    })
+    } ,[] )
      
     return (
       <View style={styles.container}>
@@ -95,9 +139,12 @@ export default function YourTicket({ route }) {
        {   seconds?
         <View>
              <View style={{marginVertical:50}}>
-        
+        {route.params?
              <Countdown userReservedtime={route.params?route.params.countDown:seconds} Slots={route.params.Slots} emptySlotIndex={route.params.slotIndex} 
              setSlots={route.params.setSlots} actionAfterFinish={reserveFromUser} setReserveBefore={route.params.setReserveB}/>
+             :
+             <Countdown userReservedtime={seconds} actionAfterFinish={reserveFromUser} />
+        }
              </View>
              <View style={{justifyContent:"center",alignItems:"center"}}>
                <QRCode

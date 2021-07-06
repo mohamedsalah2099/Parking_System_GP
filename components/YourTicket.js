@@ -17,9 +17,9 @@ async function  _onPressPostSensor (sensor,value) {
       })
     })
       .then (res => res.json ())
-      .then (json => console.log (JSON.stringify (json)));
+      .then (json => console.log(JSON.stringify (json)));
   } catch (e) {
-    console.log (e);
+    console.log(e);
   }
 }
 
@@ -93,14 +93,16 @@ export default function YourTicket({ route }) {
          
      setDiffTime(15*60*1000-( Date.parse(CurrentDate) - Date.parse(json.Result[0].TimeStamp)))
      if(diffTime>0   ){
-       console.log("Not here")
+       console.log("from application")
      // route.params.setReserveB(true)
       setReserveFromUser(false)
      setDate(json.Result[0].TicketData);
      setSlotInd(json.Result[0].slotIndex)
       setSeconds(diffTime/1000)
      setParkN(json.Result[0].parkingName) 
-     setQrString(date+parkingN+slotInd);
+    // setQrString(date+" "+parkingN+" "+slotInd);
+   console.log(date+" "+parkingN+" "+slotInd);
+   setQrString(date+" "+parkingN+" "+slotInd)
     }else{setSeconds(0)
     console.log("Yesssssssss")}
   
@@ -119,20 +121,23 @@ export default function YourTicket({ route }) {
   }
  
     useEffect(()=>{
-      console.log(route.params)
+      console.log(route.params.slotSensor)
        route.params?console.log("yes"):console.log("no")
        
       refreshTicket()
     } ,[] )
      const refreshTicket=()=>{
       lockOrientation()
-      if(route.params && route.params.TicketDate ){
+      if(route.params.fromMap ){
         setReserveFromUser(true)
        setDate(route.params.TicketDate);
-       setSlotInd(route.params.slotIndex)
+       setSlotInd(route.params.slotSensor)
        setSeconds(route.params.countDown)
        setParkN(route.params.parkingName)
-       setQrString(date+parkingN+slotInd);
+      console.log(slotInd);
+      console.log(date+" "+parkingN+" "+slotInd);
+      setQrString(date+" "+parkingN+" "+slotInd)
+      console.log("from map")
       }else{
         console.log("here")
         setReserveFromUser(false)
@@ -153,7 +158,7 @@ export default function YourTicket({ route }) {
        {   seconds?
         <View>
              <View style={{marginVertical:50}}>
-        {route.params && route.params.TicketDate?
+        {route.params.fromMap?
              <Countdown userReservedtime={route.params?route.params.countDown:seconds} Slots={route.params.Slots} emptySlotIndex={route.params.slotIndex} 
              setSlots={route.params.setSlots} actionAfterFinish={reserveFromUser} setReserveBefore={route.params.setReserveB}/>
              :
@@ -161,11 +166,17 @@ export default function YourTicket({ route }) {
         }
              </View>
              <View style={{justifyContent:"center",alignItems:"center"}}>
+             {
+               slotInd?
                <QRCode
-                 value={qrString}
-                 size={300}
-                 bgColor='black'
-                 fgColor='white'/>
+               value={qrString}
+               size={300}
+               bgColor='black'
+               fgColor='white'/>:
+               <Text></Text>
+             }
+                
+               
                  </View> 
                  </View>
                  :

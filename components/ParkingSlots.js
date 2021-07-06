@@ -6,6 +6,7 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import { useNavigation } from '@react-navigation/native';
 import { LogBox } from 'react-native';
 import Swiper from 'react-native-swiper';
+ 
 async function  _onPressPostApplication (Name,email,TicketDate,SensorID,ParkingName,timeReserved) {
   try {
     const sens=218
@@ -58,7 +59,7 @@ const ShowContentModal = (status) => {
           status.allSlots[i].status = 2;
           _onPressPostSensor(status.allSlots[i].sensor,"2.5")
           sensor = status.allSlots[i].sensor
-
+         
         }
       }
       status.setReserveB(true)
@@ -77,11 +78,11 @@ const ShowContentModal = (status) => {
     var endDate = new Date();
     // Do your operations
     var Seconds = Math.round(((bookedDate - endDate.getTime()) / 1000) + 60*15);
+    console.log("sara"+status.parkingTitle)
     navigation.navigate({
       name: "YourTicket",
       params: { TicketDate: bookedDate, countDown: Seconds, slotIndex: status.emptySlotIndex, parkingName: status.parkingTitle ,Slots:status.allSlots,setSlots:status.setUpdatedSlots
-   ,setReserveB:status.setReserveB,reserveB:status.reserveB,email:status.Umail},
-
+   ,setReserveB:status.setReserveB,reserveB:status.reserveB,email:status.Umail,slotSensor:status.slotSensor,fromMap:true}, 
     }); LogBox.ignoreLogs([
       'Non-serializable values were found in the navigation state',
     ]);
@@ -137,14 +138,14 @@ const SlotAction = (status) => {
               :
               status.slotStatus == 0 && status.enableInfo == true ?
               <ShowContentModal message={"Congratulations!! you reserved slot number " + status.slotIndex + " the ticket will expire after 15 min."} status={status.slotStatus} setEnable={status.setStatus}
-              setUpdatedSlots={status.setslots} emptySlotIndex={status.slotIndex} allSlots={status.AllSlots}  reserveB = {status.reserveB} setReserveB={status.setReserveB} setEnableInfo={status.setEnableInfo} enableInfo={status.enableInfo} />
+              setUpdatedSlots={status.setslots} emptySlotIndex={status.slotIndex} parkingTitle={status.parkingName}  slotSensor={status.slotSensor} allSlots={status.AllSlots}  reserveB = {status.reserveB} setReserveB={status.setReserveB} setEnableInfo={status.setEnableInfo} enableInfo={status.enableInfo} />
              
               :status.reserveB?
               <ShowContentModal message="Sorry,you can't reserve on slot at atime" status={status.slotStatus} reserveB = {status.reserveB} setReserveB={status.setReserveB} setEnable={status.setStatus} allSlots={status.AllSlots}/>
               :  
-              <ShowContentModal message={"The slot will cost " + status.cost + " /hour  Are you sure to continue?"} status={status.slotStatus} setEnable={status.setStatus}
+              <ShowContentModal message={"The slot will cost " + status.cost + " /hour  Are you sure to continue?"} status={status.slotStatus} setEnable={status.setStatus} availableSlots={status.availableSlot}
                   emptySlotIndex={status.slotIndex} allSlots={status.AllSlots} setUpdatedSlots={status.setslots} setEnableInfo={status.setEnableInfo} enableInfo={status.enableInfo}
-                  parkingTitle={status.parkingName}  reserveB = {status.reserveB} setReserveB={status.setReserveB}  Uname={status.Uname} Umail={status.Umail}/>
+                  slotSensor={status.slotSensor}   parkingTitle={status.parkingName}  reserveB = {status.reserveB} setReserveB={status.setReserveB}  Uname={status.Uname} Umail={status.Umail}/>
 
         }
 
@@ -154,9 +155,10 @@ const SlotAction = (status) => {
   );
 }
 
-
+//the main component 
 function ParkingSlots({ route }) {
- 
+ var reserved=0
+ var busy=0
   const Parking = {
     title: parkingName, cost: parkingCost, availableSlot: parkingAvaeSlots, totalSlots: 16, slots: [{ status: 0, sensor: 218 }, { status: 0, sensor: 219 },
     { status: 0, sensor: 220 }, { status: 0, sensor: 221 }, { status: 0, sensor: 222 }, { status: 0, sensor: 223 }, { status: 1, sensor: 224 }, { status: 0, sensor: 225 },
@@ -209,11 +211,12 @@ function ParkingSlots({ route }) {
           if (Math.round(JSON.stringify(json)) == 5 /*&& slot.status != 2 */) {
             slot.status = 0
           } else  if (Math.round(JSON.stringify(json)) == 0) {
-            slot.status = 1
+            slot.status = 1 ;  
           }else  if (JSON.stringify(json) == 2.5) {
-            slot.status = 2 
+            slot.status = 2 ; 
           } if (index == 15) {
             setShowSlots(true)
+            
           }
         }
         );
@@ -227,6 +230,7 @@ function ParkingSlots({ route }) {
 useEffect(()=>{
   setUserMail(route.params.email)
   setUserName(route.params.name)
+   
 },[])
   useEffect(() => {
     console.log(userMail+" "+userName)
@@ -251,7 +255,7 @@ lockOrientation();
     
       <LinearGradient style={styles.background} colors={['#0f4c5c', 'transparent']} />
       <Text style={[styles.headerStyle, { top: 20, left: 10, }]}>{parkingName}</Text>
-      <Text style={[styles.headerStyle, { top: 20, left: 300, }]}>Available slots: {parkingAvaeSlots}</Text>
+      <Text style={[styles.headerStyle, { top: 20, left: 300, }]}>Available slots: {parkingAvaeSlots   }</Text>
       <TouchableOpacity style={styles.refreshBTn} onPress={() => {
         setShowSlots(false); slots.map((slot, index) =>
           getSlotsData(slot, index))
@@ -317,8 +321,8 @@ lockOrientation();
 
       </View>
 
-      <SlotAction status={enable} setStatus={setEnable} enableInfo={enableInfo} setEnableInfo={setEnableInfo} slotStatus={slotStatus} parking={Parking} parkingName={parkingName} cost={parkingCost}
-      slotIndex={Index} AllSlots={slots} setslots={setSlots} reserveB = {reserveBefore} setReserveB={setReserveBefore} Uname={userName} Umail={userMail}/>
+      <SlotAction status={enable} setStatus={setEnable} enableInfo={enableInfo} setEnableInfo={setEnableInfo} slotStatus={slotStatus} parking={Parking} parkingName={parkingName} cost={parkingCost} availableSlots={parkingAvaeSlots}
+      slotIndex={Index} slotSensor={slots[Index].sensor} AllSlots={slots} setslots={setSlots} reserveB = {reserveBefore} setReserveB={setReserveBefore} Uname={userName} Umail={userMail} />
 
 
     </View>

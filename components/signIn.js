@@ -50,7 +50,7 @@ const SignIn = ({navigation}) => {
         }
         catch(e){
           console.log(e);
-          
+          setEnableModal(true)
         }
    }
     }

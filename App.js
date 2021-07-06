@@ -38,7 +38,7 @@ return (
   }}>
   <Drawer.Screen name="ParkingMap" component={ParkingMap}  />
   <Drawer.Screen name="ParkingSlots" component={ParkingSlots} initialParams={{name:route.params.name,email:route.params.email }}/>
-  <Drawer.Screen name="YourTicket" component={YourTicket}  initialParams={{ email:route.params.email }}  />
+  <Drawer.Screen name="YourTicket" component={YourTicket}  initialParams={{ email:route.params.email,fromMap:false }}  />
   
 </Drawer.Navigator>
 
